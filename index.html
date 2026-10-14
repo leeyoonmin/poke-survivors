@@ -167,6 +167,9 @@
           <h2 id="levelUpTitle">새로운 기술 또는 도구를 선택하세요</h2>
         </div>
         <div id="upgradeChoices" class="choices-list"></div>
+        <button id="btnRerollChoices" class="btn-secondary" type="button" style="width:100%;margin-top:8px">
+          🎲 선택지 다시 뽑기 (리롤 1회 남음)
+        </button>
       </div>
     </div>
 
@@ -218,6 +221,13 @@
             <p class="muted-text">전투에서 모은 포켓코인으로 모든 파트너의 기본 능력치를 영구 강화합니다.</p>
           </div>
           <div class="coin-pill">🪙 <strong id="labCoins">0</strong></div>
+        </div>
+        <div id="goldenEggBox" style="background:#fef3c7;border:2px solid #b45309;border-radius:6px;padding:7px 10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div style="text-align:left;flex:1;min-width:160px">
+            <div style="font-size:0.86rem;font-weight:900;color:#92400e">🥚 전설의 황금알 무한 부화 (누적 Lv.<span id="goldenEggCount">0</span>)</div>
+            <div style="font-size:0.75rem;font-weight:800;color:#1e293b">남는 코인으로 모든 포켓몬 영구 공격력 +2% · HP +2% 무한 중첩!</div>
+          </div>
+          <button id="btnBuyGoldenEgg" class="lab-buy-btn" type="button" style="width:auto;padding:7px 12px;white-space:nowrap">🪙 1,500 부화</button>
         </div>
         <div id="labGrid" class="lab-grid"></div>
         <div class="modal-actions row-end">

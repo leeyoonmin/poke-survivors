@@ -420,8 +420,12 @@ class PokeSurvivorsGame {
       for (const upg of window.GAME_DATA.metaUpgrades) {
         const lvl = this.getUpgradeLevel(upg.id);
         for (let i = 0; i < lvl; i++) {
-          refunded += Math.floor(upg.baseCost * Math.pow(1.45, i));
+          refunded += Math.floor(upg.baseCost * Math.pow(1.52, i));
         }
+      }
+      const eggs = this.getUpgradeLevel('golden_egg');
+      for (let i = 0; i < eggs; i++) {
+        refunded += 1500 + i * 250;
       }
       this.saveData.coins += refunded;
       this.saveData.upgrades = {};
@@ -796,13 +800,30 @@ class PokeSurvivorsGame {
 
   renderLabModal() {
     document.getElementById('labCoins').textContent = this.saveData.coins.toLocaleString();
+    const eggCount = this.getUpgradeLevel('golden_egg');
+    const eggCountEl = document.getElementById('goldenEggCount');
+    if (eggCountEl) eggCountEl.textContent = eggCount;
+    const eggBtn = document.getElementById('btnBuyGoldenEgg');
+    if (eggBtn) {
+      const eggCost = 1500 + eggCount * 250;
+      eggBtn.textContent = `🪙 ${eggCost.toLocaleString()} 부화`;
+      eggBtn.disabled = this.saveData.coins < eggCost;
+      eggBtn.onclick = () => {
+        if (this.saveData.coins < eggCost) return;
+        window.sound.playEvolve();
+        this.saveData.coins -= eggCost;
+        this.saveData.upgrades.golden_egg = eggCount + 1;
+        this.saveProgress();
+        this.renderLabModal();
+      };
+    }
     const grid = document.getElementById('labGrid');
     grid.innerHTML = '';
 
     for (const upg of window.GAME_DATA.metaUpgrades) {
       const lvl = this.getUpgradeLevel(upg.id);
       const isMax = lvl >= upg.max;
-      const cost = Math.floor(upg.baseCost * Math.pow(1.45, lvl));
+      const cost = Math.floor(upg.baseCost * Math.pow(1.52, lvl));
       const canBuy = !isMax && this.saveData.coins >= cost;
 
       const item = document.createElement('div');
@@ -864,12 +885,17 @@ class PokeSurvivorsGame {
     document.getElementById('hudScreen').classList.remove('hidden');
     document.getElementById('bossHud').classList.add('hidden');
 
-    const mightMeta = 1 + this.getUpgradeLevel('might') * 0.05;
-    const hpMeta = 1 + this.getUpgradeLevel('hp') * 0.08;
-    const speedMeta = 1 + this.getUpgradeLevel('speed') * 0.05;
+    const eggLvl = this.getUpgradeLevel('golden_egg');
+    const mightMeta = (1 + this.getUpgradeLevel('might') * 0.05) * (1 + eggLvl * 0.02);
+    const hpMeta = (1 + this.getUpgradeLevel('hp') * 0.08) * (1 + eggLvl * 0.02);
+    const speedMeta = 1 + this.getUpgradeLevel('speed') * 0.04;
     const magnetMeta = 1 + this.getUpgradeLevel('magnet') * 0.12;
-    const greedMeta = (1 + this.getUpgradeLevel('greed') * 0.08) * (this.currentStage ? this.currentStage.coinMult : 1.0);
+    const greedMeta = (1 + this.getUpgradeLevel('greed') * 0.06) * (this.currentStage ? this.currentStage.coinMult : 1.0);
+    const cooldownMeta = Math.pow(0.97, this.getUpgradeLevel('cooldown'));
+    const armorMeta = this.getUpgradeLevel('armor') * 1.5;
+    const regenMeta = this.getUpgradeLevel('armor') * 0.5;
     const revives = this.getUpgradeLevel('revive');
+    const rerolls = 1 + this.getUpgradeLevel('reroll');
 
     const maxHp = Math.round(starter.stats.hp * hpMeta);
 
@@ -888,13 +914,14 @@ class PokeSurvivorsGame {
       maxHp: maxHp,
       baseSpeed: starter.stats.speed * speedMeta,
       baseMight: starter.stats.might * mightMeta,
-      baseArmor: starter.stats.armor,
-      baseRegen: starter.stats.regen,
+      baseArmor: starter.stats.armor + armorMeta,
+      baseRegen: starter.stats.regen + regenMeta,
       baseMagnet: starter.stats.magnet * magnetMeta,
-      baseCooldown: starter.stats.cooldown,
+      baseCooldown: starter.stats.cooldown * cooldownMeta,
       baseExpMult: starter.stats.expMult * greedMeta,
       greedMult: greedMeta,
       revivesLeft: revives,
+      rerollsLeft: rerolls,
       level: 1,
       exp: 0,
       nextExp: 10,
@@ -992,12 +1019,15 @@ class PokeSurvivorsGame {
     const missingHpRatio = p.maxHp > 0 ? Math.max(0, 1 - p.hp / p.maxHp) : 0;
     const blazeBonus = p.starter.id === 'charmander' ? (1 + missingHpRatio * 0.5) : 1.0;
 
+    const labAreaMeta = 1 + this.getUpgradeLevel('area') * 0.05;
+    const labAmountMeta = this.getUpgradeLevel('amount');
+
     return {
       might: p.baseMight * (1 + mightLv * 0.16) * blazeBonus,
-      area: 1 + areaLv * 0.15,
+      area: (1 + areaLv * 0.15) * labAreaMeta,
       regen: p.baseRegen + seedLv * 1.4,
       cooldown: p.baseCooldown * Math.pow(0.92, hasteLv),
-      bonusAmount: Math.min(3, Math.ceil(amountLv * 0.6)),
+      bonusAmount: Math.min(4, Math.ceil(amountLv * 0.6) + labAmountMeta),
       speed: p.baseSpeed * (1 + speedLv * 0.12),
       magnet: p.baseMagnet * (1 + magnetLv * 0.32),
       expMult: p.baseExpMult * (1 + luckyLv * 0.2),
@@ -1338,6 +1368,21 @@ class PokeSurvivorsGame {
       });
 
       listEl.appendChild(btn);
+    }
+
+    const rerollBtn = document.getElementById('btnRerollChoices');
+    if (rerollBtn) {
+      const left = this.player.rerollsLeft || 0;
+      rerollBtn.textContent = left > 0
+        ? `🎲 선택지 다시 뽑기 (리롤 ${left}회 남음)`
+        : '🎲 리롤 횟수 소진 (오박사 연구소에서 확장 가능)';
+      rerollBtn.disabled = left <= 0;
+      rerollBtn.onclick = () => {
+        if ((this.player.rerollsLeft || 0) <= 0) return;
+        this.player.rerollsLeft--;
+        window.sound.playClick();
+        this.triggerLevelUpModal();
+      };
     }
 
     document.getElementById('levelUpModal').classList.remove('hidden');
@@ -2430,10 +2475,12 @@ class PokeSurvivorsGame {
 
   damageEnemy(e, rawDamage, color = '#fff', knockback = 14) {
     const isRiolu = this.player.starter.id === 'riolu';
-    const critChance = isRiolu ? 0.39 : 0.14;
-    const critMult = isRiolu ? 2.0 : 1.5;
+    const critLab = this.getUpgradeLevel('crit');
+    const bossSlayerLab = this.getUpgradeLevel('boss_slayer');
+    const critChance = (isRiolu ? 0.39 : 0.14) + critLab * 0.02;
+    const critMult = (isRiolu ? 2.0 : 1.5) + critLab * 0.06;
     const isCrit = Math.random() < critChance;
-    const bossBonus = (isRiolu && (e.isBoss || e.isElite)) ? 1.25 : 1.0;
+    const bossBonus = ((isRiolu && (e.isBoss || e.isElite)) ? 1.25 : 1.0) * ((e.isBoss || e.isElite) ? (1 + bossSlayerLab * 0.08) : 1.0);
     const vulnMult = (e.armorBreak && e.armorBreak > 0) ? 1.25 : 1.0;
     const dmg = Math.max(1, Math.round(rawDamage * bossBonus * vulnMult * (isCrit ? critMult : 1) * (0.92 + Math.random() * 0.16)));
     e.hp -= dmg;
@@ -2561,7 +2608,7 @@ class PokeSurvivorsGame {
           magnetized: false
         });
 
-        if (e.isElite || Math.random() < 0.08) {
+        if (e.isElite || Math.random() < 0.045) {
           this.pickups.push({ type: 'coin', x: e.x + 8, y: e.y });
         }
 
@@ -2749,7 +2796,7 @@ class PokeSurvivorsGame {
           this.showToast('💥 대폭발 발동! 주변 야생 포켓몬 초토화!');
         } else if (pk.type === 'coin') {
           window.sound.playGem();
-          const c = Math.max(1, Math.round(6 * p.greedMult));
+          const c = Math.max(1, Math.round(3 * p.greedMult));
           this.runCoins += c;
           this.saveData.coins += c;
           this.saveProgress();
