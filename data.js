@@ -1,4 +1,4 @@
-// Game Data: Starters, Evolutions, Moves (Weapons), Items (Passives), Waves, Bosses, Meta Upgrades
+// Game Data: Starters (with Exclusive Signatures & Unique Traits), TM Weapons, Passives, Waves, Bosses
 
 window.GAME_DATA = {
   starters: [
@@ -8,8 +8,10 @@ window.GAME_DATA = {
       dex: 25,
       type: '전기',
       typeColor: '#facc15',
-      desc: '빠른 기동력과 강력한 연쇄 뇌격으로 적 군단을 감전시키는 스피드스터',
-      bonusText: '이동속도 +15% · 번개 연쇄 특화',
+      traitName: '정전기 (Static)',
+      traitDesc: '번개 타격 시 25% 확률로 적 마비(기절) · 추가 이동속도 비례 번개 피해량 증가',
+      desc: '[전용기: 10만볼트] 빠른 기동력과 마비 뇌격으로 적 군단을 감전시키는 스피드스터',
+      bonusText: '특성 [정전기] · 전용기 [10만볼트]',
       startWeapon: 'thunderbolt',
       stats: { hp: 118, speed: 180, might: 1.08, armor: 0, regen: 0.3, magnet: 98, cooldown: 0.96, expMult: 1.0 },
       evolutions: [
@@ -22,8 +24,10 @@ window.GAME_DATA = {
       dex: 4,
       type: '불꽃',
       typeColor: '#f97316',
-      desc: '압도적인 화력의 관통 화염 브레스로 몰려오는 포켓몬 무리를 소각하는 딜러',
-      bonusText: '공격력 +22% · 화염 폭발 특화',
+      traitName: '맹화 (Blaze)',
+      traitDesc: '화염 공격이 3초간 지속 화상(DoT) 부여 · 잃은 체력 비례 공격력 최대 +50% 증가',
+      desc: '[전용기: 화염방사] 압도적인 맹화 화력과 화상 폭발로 군단을 소각하는 메인 딜러',
+      bonusText: '특성 [맹화] · 전용기 [화염방사]',
       startWeapon: 'flamethrower',
       stats: { hp: 112, speed: 164, might: 1.22, armor: 0, regen: 0.2, magnet: 90, cooldown: 1.0, expMult: 1.0 },
       evolutions: [
@@ -37,8 +41,10 @@ window.GAME_DATA = {
       dex: 7,
       type: '물',
       typeColor: '#38bdf8',
-      desc: '단단한 등껍질과 회전하는 해류 소용돌이로 포위망을 분쇄하는 수호자',
-      bonusText: '최대 체력 +35% · 방어력 +3',
+      traitName: '조가비갑옷 & 급류',
+      traitDesc: '8초마다 피해를 1회 완전 무시하는 [물의 보호막] 생성 · 수압 넉백 거리 2배',
+      desc: '[전용기: 아쿠아링] 자동 재생되는 물의 보호막과 회전 해류로 포위망을 분쇄하는 수호자',
+      bonusText: '특성 [물의 보호막] · 전용기 [아쿠아링]',
       startWeapon: 'aquaring',
       stats: { hp: 158, speed: 156, might: 1.05, armor: 3, regen: 0.4, magnet: 90, cooldown: 1.0, expMult: 1.0 },
       evolutions: [
@@ -52,8 +58,10 @@ window.GAME_DATA = {
       dex: 1,
       type: '풀/독',
       typeColor: '#4ade80',
-      desc: '주변 적의 생명력을 빨아들이는 기가드레인 영역으로 불사신처럼 버티는 전문가',
-      bonusText: '체력 재생 +1.8/초 · 자석 범위 +25%',
+      traitName: '맹독포자 & 심록',
+      traitDesc: '오라에 닿은 적에게 지속 맹독 및 방어력 감소(받는 모든 피해 +25% 증폭) 부여',
+      desc: '[전용기: 기가드레인] 적의 생명력을 흡수하고 방어력을 깎는 맹독 결계의 생존 전문가',
+      bonusText: '특성 [맹독/방깎] · 전용기 [기가드레인]',
       startWeapon: 'gigadrain',
       stats: { hp: 140, speed: 158, might: 1.05, armor: 1, regen: 1.8, magnet: 115, cooldown: 1.0, expMult: 1.0 },
       evolutions: [
@@ -67,8 +75,10 @@ window.GAME_DATA = {
       dex: 92,
       type: '고스트',
       typeColor: '#c084fc',
-      desc: '적 사이를 튕겨 다니는 섀도볼과 빠른 기술 회전율을 지닌 심연의 마법사',
-      bonusText: '쿨타임 감소 -15% · 이동속도 +10%',
+      traitName: '부유 & 저주받은바디',
+      traitDesc: '적에게 피격 시 30% 확률로 공격 완전 회피(MISS) · 투사체 도탄(튕김) 횟수 +2회',
+      desc: '[전용기: 섀도볼] 유령처럼 공격을 흘려내고 도탄 구체로 적들을 유린하는 마법사',
+      bonusText: '특성 [30% 회피/도탄+2] · 전용기 [섀도볼]',
       startWeapon: 'shadowball',
       stats: { hp: 105, speed: 172, might: 1.12, armor: 0, regen: 0.25, magnet: 98, cooldown: 0.85, expMult: 1.05 },
       evolutions: [
@@ -82,8 +92,10 @@ window.GAME_DATA = {
       dex: 447,
       type: '격투/강철',
       typeColor: '#60a5fa',
-      desc: '돌아오는 파동 수리검과 높은 성장 잠재력을 가진 파동의 용사',
-      bonusText: '경험치 획득 +20% · 공격력 +12%',
+      traitName: '정신의력 (Inner Focus)',
+      traitDesc: '기본 치명타 확률 +25% & 치명타 피해량 2배 · 보스 및 우두머리 대상 피해 +25%',
+      desc: '[전용기: 파동탄] 치명적인 파동 크리티컬과 보스 학살 능력을 지닌 파동의 용사',
+      bonusText: '특성 [치명타 특화] · 전용기 [파동탄]',
       startWeapon: 'aurasphere',
       stats: { hp: 122, speed: 170, might: 1.12, armor: 1, regen: 0.35, magnet: 98, cooldown: 0.94, expMult: 1.2 },
       evolutions: [
@@ -93,16 +105,18 @@ window.GAME_DATA = {
   ],
 
   weapons: {
+    // ================= 6 EXCLUSIVE STARTER SIGNATURE WEAPONS =================
     thunderbolt: {
       id: 'thunderbolt',
-      name: '10만볼트',
+      name: '10만볼트 [피카츄 전용]',
       icon: '⚡',
       color: '#facc15',
       secondaryColor: '#fef08a',
+      exclusiveTo: 'pikachu',
       maxLevel: 8,
       evolveWith: 'magnet_coil',
       evolveInto: 'volttackle',
-      desc: '가까운 적에게 다중 분기 낙뢰를 내리꽂고 주변 적들에게 연쇄 감전 아크와 스파크 폭발을 일으킵니다.',
+      desc: '[피카츄 전용기] 가까운 적에게 다중 분기 낙뢰를 내리꽂고 연쇄 감전 및 정전기 마비를 일으킵니다.',
       base: { damage: 28, cooldown: 1.05, count: 1, chains: 3, range: 310 }
     },
     volttackle: {
@@ -111,22 +125,24 @@ window.GAME_DATA = {
       icon: '🌩️',
       color: '#fde047',
       secondaryColor: '#38bdf8',
+      exclusiveTo: 'pikachu',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 천공에서 거대한 뇌신 기둥이 연속 낙하하며 화면 전체를 연쇄 번개로 초토화합니다!',
+      desc: '[피카츄 궁극기] 천공에서 거대한 뇌신 기둥이 연속 낙하하며 화면 전체를 마비 번개로 초토화합니다!',
       base: { damage: 78, cooldown: 0.58, count: 3, chains: 6, range: 410 }
     },
 
     flamethrower: {
       id: 'flamethrower',
-      name: '화염방사',
+      name: '화염방사 [파이리 전용]',
       icon: '🔥',
       color: '#f97316',
       secondaryColor: '#fde047',
+      exclusiveTo: 'charmander',
       maxLevel: 8,
       evolveWith: 'charcoal',
       evolveInto: 'blastburn',
-      desc: '적 방향으로 불티와 화염 꼬리를 남기며 적들을 관통·소각하는 고열 화염탄을 발사합니다.',
+      desc: '[파이리 전용기] 적들을 관통·소각하며 맹화 화상(지속 피해)을 입히는 고열 화염탄을 발사합니다.',
       base: { damage: 24, cooldown: 0.9, count: 2, speed: 410, pierce: 3, size: 15 }
     },
     blastburn: {
@@ -135,22 +151,24 @@ window.GAME_DATA = {
       icon: '🌋',
       color: '#ef4444',
       secondaryColor: '#facc15',
+      exclusiveTo: 'charmander',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 전방위로 거대한 태양 화염구를 난사하며 지면에 용암 폭발 흔적을 남깁니다!',
+      desc: '[리자몽 궁극기] 전방위로 거대한 태양 화염구를 난사하며 지면에 용암 폭발 흔적을 남깁니다!',
       base: { damage: 68, cooldown: 0.55, count: 7, speed: 460, pierce: 9, size: 23 }
     },
 
     aquaring: {
       id: 'aquaring',
-      name: '아쿠아링',
+      name: '아쿠아링 [꼬부기 전용]',
       icon: '💧',
       color: '#38bdf8',
       secondaryColor: '#bae6fd',
+      exclusiveTo: 'squirtle',
       maxLevel: 8,
       evolveWith: 'mystic_water',
       evolveInto: 'hydrocannon',
-      desc: '플레이어 주위에 물결 리본과 거품을 일으키며 고속 회전하는 수압 구체로 적을 밀쳐냅니다.',
+      desc: '[꼬부기 전용기] 물결 리본을 일으키며 고속 회전하는 수압 구체로 적을 강하게 밀쳐냅니다.',
       base: { damage: 20, cooldown: 0.1, count: 2, radius: 86, rotSpeed: 3.4, size: 17 }
     },
     hydrocannon: {
@@ -159,23 +177,25 @@ window.GAME_DATA = {
       icon: '🌊',
       color: '#0284c7',
       secondaryColor: '#7dd3fc',
+      exclusiveTo: 'squirtle',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 6개의 거대한 심해 해류 소용돌이가 폭풍처럼 회전하며 접근하는 모든 적을 분쇄합니다!',
+      desc: '[거북왕 궁극기] 6개의 거대한 심해 해류 소용돌이가 폭풍처럼 회전하며 모든 적을 분쇄합니다!',
       base: { damage: 54, cooldown: 0.1, count: 6, radius: 118, rotSpeed: 5.5, size: 25 }
     },
 
     gigadrain: {
       id: 'gigadrain',
-      name: '기가드레인',
+      name: '기가드레인 [이상해씨 전용]',
       icon: '🌿',
       color: '#4ade80',
       secondaryColor: '#bbf7d0',
+      exclusiveTo: 'bulbasaur',
       maxLevel: 8,
       evolveWith: 'miracle_seed',
       evolveInto: 'frenzyplant',
-      desc: '생명력 흡수 마법진을 펼쳐 범위 내 적의 에너지를 초록빛 구체로 빨아들이고 둔화시킵니다.',
-      base: { damage: 13, cooldown: 0.38, radius: 85, healChance: 0.1 }
+      desc: '[이상해씨 전용기] 생명력 흡수 마법진을 펼쳐 적에게 맹독·방깎·둔화를 걸고 체력을 흡수합니다.',
+      base: { damage: 13, cooldown: 0.38, radius: 85, healChance: 0.12 }
     },
     frenzyplant: {
       id: 'frenzyplant',
@@ -183,22 +203,24 @@ window.GAME_DATA = {
       icon: '🌳',
       color: '#16a34a',
       secondaryColor: '#86efac',
+      exclusiveTo: 'bulbasaur',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 고대 숲의 마법진과 가시 덩굴이 펼쳐져 적들의 생명력을 쉴 새 없이 흡수합니다!',
-      base: { damage: 38, cooldown: 0.25, radius: 148, healChance: 0.28 }
+      desc: '[이상해꽃 궁극기] 고대 숲의 마법진이 펼쳐져 적들의 방어력을 무너뜨리고 생명력을 흡수합니다!',
+      base: { damage: 38, cooldown: 0.25, radius: 148, healChance: 0.30 }
     },
 
     shadowball: {
       id: 'shadowball',
-      name: '섀도볼',
+      name: '섀도볼 [고오스 전용]',
       icon: '👻',
       color: '#c084fc',
       secondaryColor: '#e9d5ff',
+      exclusiveTo: 'gastly',
       maxLevel: 8,
       evolveWith: 'spell_tag',
       evolveInto: 'darkvoid',
-      desc: '암흑 오라 꼬리를 끌며 적들 사이를 연쇄 도탄(Ricochet)하는 고스트 구체를 발사합니다.',
+      desc: '[고오스 전용기] 암흑 오라 꼬리를 끌며 적들 사이를 끝없이 연쇄 도탄하는 고스트 구체입니다.',
       base: { damage: 26, cooldown: 1.05, count: 1, bounces: 3, speed: 360, size: 15 }
     },
     darkvoid: {
@@ -207,22 +229,24 @@ window.GAME_DATA = {
       icon: '🌑',
       color: '#9333ea',
       secondaryColor: '#f0abfc',
+      exclusiveTo: 'gastly',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 주변 적들을 중력으로 강하게 빨아들이며 연쇄 암흑 폭발을 일으키는 블랙홀을 발사합니다!',
+      desc: '[팬텀 궁극기] 주변 적들을 중력으로 강하게 빨아들이며 연쇄 폭발하는 블랙홀을 발사합니다!',
       base: { damage: 72, cooldown: 0.72, count: 3, bounces: 6, speed: 420, size: 24 }
     },
 
     aurasphere: {
       id: 'aurasphere',
-      name: '파동탄 부메랑',
+      name: '파동탄 [리오르 전용]',
       icon: '🌀',
       color: '#60a5fa',
       secondaryColor: '#bfdbfe',
+      exclusiveTo: 'riolu',
       maxLevel: 8,
       evolveWith: 'expert_belt',
       evolveInto: 'aurastorm',
-      desc: '고속 회전하는 파동 수리검이 소닉붐을 일으키며 날아갔다 플레이어에게 되돌아옵니다.',
+      desc: '[리오르 전용기] 고속 회전하는 파동 수리검이 소닉붐을 일으키며 왕복 관통합니다.',
       base: { damage: 25, cooldown: 1.08, count: 1, speed: 380, size: 17 }
     },
     aurastorm: {
@@ -231,42 +255,188 @@ window.GAME_DATA = {
       icon: '💠',
       color: '#2563eb',
       secondaryColor: '#93c5fd',
+      exclusiveTo: 'riolu',
       isEvolved: true,
       maxLevel: 1,
-      desc: '[궁극기] 거대한 파동 십자 칼날들이 다방향으로 교차 비행하며 전장을 난도질합니다!',
+      desc: '[루카리오 궁극기] 거대한 파동 십자 칼날들이 다방향으로 교차 비행하며 전장을 난도질합니다!',
       base: { damage: 70, cooldown: 0.65, count: 4, speed: 480, size: 25 }
+    },
+
+    // ================= 9 UNIVERSAL TM SKILLS (ALL POKÉMON CAN LEARN!) =================
+    hyperbeam: {
+      id: 'hyperbeam',
+      name: 'TM01 파괴광선',
+      icon: '💥',
+      color: '#f59e0b',
+      secondaryColor: '#fef047',
+      maxLevel: 8,
+      evolveWith: 'charcoal',
+      evolveInto: 'gigaimpact',
+      desc: '[공용 TM] 가장 강한 적을 조준해 화면 끝까지 일직선으로 꿰뚫는 초대형 관통 레이저를 발사합니다.',
+      base: { damage: 46, cooldown: 2.3, count: 1, width: 22, range: 680 }
+    },
+    gigaimpact: {
+      id: 'gigaimpact',
+      name: '기가임팩트 레이저',
+      icon: '🌟',
+      color: '#fde047',
+      secondaryColor: '#ef4444',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 다중 초고열 파괴광선이 교차 발사되어 일직선상의 모든 적을 증발시킵니다!',
+      base: { damage: 115, cooldown: 1.35, count: 3, width: 34, range: 780 }
+    },
+
+    aerialace: {
+      id: 'aerialace',
+      name: 'TM02 제비반환 & 칼춤',
+      icon: '⚔️',
+      color: '#38bdf8',
+      secondaryColor: '#e0f2fe',
+      maxLevel: 8,
+      evolveWith: 'spell_tag',
+      evolveInto: 'sacredsword',
+      desc: '[공용 TM] 접근하는 적들을 초고속 초승달 검기(Slash)로 연속 베어 넘기는 근접 호위 기술입니다.',
+      base: { damage: 30, cooldown: 0.92, count: 1, radius: 95 }
+    },
+    sacredsword: {
+      id: 'sacredsword',
+      name: '성스러운칼날 난무',
+      icon: '🗡️',
+      color: '#60a5fa',
+      secondaryColor: '#fde047',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 전방위 360도로 거대한 빛의 검기가 쉴 새 없이 휘몰아치며 주변 적을 도륙합니다!',
+      base: { damage: 76, cooldown: 0.52, count: 3, radius: 135 }
+    },
+
+    rockslide: {
+      id: 'rockslide',
+      name: 'TM03 스톤샤워',
+      icon: '🪨',
+      color: '#a8a29e',
+      secondaryColor: '#d6d3d1',
+      maxLevel: 8,
+      evolveWith: 'expert_belt',
+      evolveInto: 'stoneedge',
+      desc: '[공용 TM] 거대한 바위들을 굴려 경로상의 적들을 뭉개고 기절(Stun)시킵니다.',
+      base: { damage: 34, cooldown: 1.45, count: 2, speed: 290, size: 19, pierce: 5 }
+    },
+    stoneedge: {
+      id: 'stoneedge',
+      name: '스톤에지 대분쇄',
+      icon: '⛰️',
+      color: '#d97706',
+      secondaryColor: '#fef08a',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 거대한 암석 쐐기들이 전방위로 돌진하며 적들을 연쇄 기절시키고 분쇄합니다!',
+      base: { damage: 84, cooldown: 0.88, count: 5, speed: 350, size: 26, pierce: 10 }
+    },
+
+    twister: {
+      id: 'twister',
+      name: 'TM04 회오리바람',
+      icon: '🌪️',
+      color: '#34d399',
+      secondaryColor: '#a7f3d0',
+      maxLevel: 8,
+      evolveWith: 'choice_scarf',
+      evolveInto: 'hurricane',
+      desc: '[공용 TM] 전장을 소용돌이치며 떠돌아다니는 진공 회오리를 생성해 적들을 다단히트로 베어냅니다.',
+      base: { damage: 18, cooldown: 2.1, count: 2, speed: 155, size: 28, life: 3.4 }
+    },
+    hurricane: {
+      id: 'hurricane',
+      name: '폭풍 (Hurricane)',
+      icon: '🌀',
+      color: '#10b981',
+      secondaryColor: '#6ee7b7',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 초대형 폭풍 토네이도 군단이 전장을 휩쓸며 적들을 빨아들이고 갈아버립니다!',
+      base: { damage: 46, cooldown: 1.4, count: 4, speed: 195, size: 42, life: 4.2 }
+    },
+
+    earthquake: {
+      id: 'earthquake',
+      name: 'TM05 지진',
+      icon: '🌍',
+      color: '#eab308',
+      secondaryColor: '#fde047',
+      maxLevel: 8,
+      evolveWith: 'miracle_seed',
+      evolveInto: 'earthpower',
+      desc: '[공용 TM] 주기적으로 대지를 강타하여 넓은 범위의 모든 적에게 균열 피해와 강한 둔화를 입힙니다.',
+      base: { damage: 36, cooldown: 2.2, radius: 170 }
+    },
+    earthpower: {
+      id: 'earthpower',
+      name: '대지의힘 (단애의칼)',
+      icon: '🌋',
+      color: '#f97316',
+      secondaryColor: '#fde047',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 대지가 연쇄 폭발하며 광역 지진파와 함께 적들을 기절시키고 둔화시킵니다!',
+      base: { damage: 92, cooldown: 1.35, radius: 245 }
+    },
+
+    iciclespear: {
+      id: 'iciclespear',
+      name: 'TM06 고드름침',
+      icon: '❄️',
+      color: '#7dd3fc',
+      secondaryColor: '#e0f2fe',
+      maxLevel: 8,
+      evolveWith: 'mystic_water',
+      evolveInto: 'sheercold',
+      desc: '[공용 TM] 적을 관통하며 30% 확률로 적을 꽁꽁 얼려 정지(빙결)시키는 얼음 창을 연사합니다.',
+      base: { damage: 22, cooldown: 1.0, count: 3, speed: 440, size: 13, pierce: 3 }
+    },
+    sheercold: {
+      id: 'sheercold',
+      name: '절대영도 눈보라',
+      icon: '🧊',
+      color: '#38bdf8',
+      secondaryColor: '#ffffff',
+      isEvolved: true,
+      maxLevel: 1,
+      desc: '[진화 TM] 극저온의 빙결 창이 폭우처럼 쏟아지며 적들을 집단 빙결 상태로 만듭니다!',
+      base: { damage: 58, cooldown: 0.62, count: 7, speed: 500, size: 18, pierce: 7 }
     },
 
     dracometeor: {
       id: 'dracometeor',
-      name: '용성군',
+      name: 'TM07 용성군',
       icon: '☄️',
       color: '#fb7185',
       secondaryColor: '#fde047',
       maxLevel: 8,
-      desc: '하늘에서 거대한 불타는 운석이 실제로 낙하하여 대폭발과 함께 용암 화염 지대를 생성합니다.',
+      desc: '[공용 TM] 하늘에서 거대한 불타는 운석이 실제로 낙하하여 대폭발과 용암 화염 지대를 생성합니다.',
       base: { damage: 38, cooldown: 1.65, count: 1, radius: 66, duration: 2.6 }
     },
 
     psychicwave: {
       id: 'psychicwave',
-      name: '사이코키네시스',
+      name: 'TM08 사이코키네시스',
       icon: '🔮',
       color: '#f472b6',
       secondaryColor: '#f9a8d4',
       maxLevel: 8,
-      desc: '다중 염동력 프리즘 충격파를 방출하여 주변 적 전체에 큰 피해와 강력한 넉백을 입힙니다.',
+      desc: '[공용 TM] 다중 염동력 프리즘 충격파를 방출하여 주변 적 전체에 큰 피해와 강력한 넉백을 입힙니다.',
       base: { damage: 30, cooldown: 2.0, radius: 145, knockback: 105 }
     },
 
     swift: {
       id: 'swift',
-      name: '고속스타',
+      name: 'TM09 고속스타',
       icon: '⭐',
       color: '#fde047',
       secondaryColor: '#ffffff',
       maxLevel: 8,
-      desc: '황금빛 스타더스트 궤적을 남기는 회전 별 탄환을 360도 전방위로 난사합니다.',
+      desc: '[공용 TM] 황금빛 스타더스트 궤적을 남기는 회전 별 탄환을 360도 전방위로 난사합니다.',
       base: { damage: 19, cooldown: 1.15, count: 6, speed: 370, size: 13 }
     }
   },
@@ -283,12 +453,12 @@ window.GAME_DATA = {
     },
     charcoal: {
       id: 'charcoal',
-      name: '목탄',
+      name: '목탄 & 구애머리띠',
       icon: '🔥',
       img: './assets/items/charcoal.png',
       maxLevel: 5,
       evolvesWeapon: 'flamethrower',
-      desc: '모든 기술의 공격력이 +16% 증가합니다. (화염방사 진화 재료)'
+      desc: '모든 기술의 공격력이 +16% 증가합니다. (화염방사 & 파괴광선 진화 재료)'
     },
     mystic_water: {
       id: 'mystic_water',
@@ -297,7 +467,7 @@ window.GAME_DATA = {
       img: './assets/items/mystic-water.png',
       maxLevel: 5,
       evolvesWeapon: 'aquaring',
-      desc: '기술 범위/크기가 +15% 증가합니다. (아쿠아링 진화 재료)'
+      desc: '기술 범위/크기가 +15% 증가합니다. (아쿠아링 & 고드름침 진화 재료)'
     },
     miracle_seed: {
       id: 'miracle_seed',
@@ -306,7 +476,7 @@ window.GAME_DATA = {
       img: './assets/items/miracle-seed.png',
       maxLevel: 5,
       evolvesWeapon: 'gigadrain',
-      desc: '최대 체력이 +15% 증가하고 초당 체력 회복량이 +1.4 증가합니다. (기가드레인 진화 재료)'
+      desc: '최대 체력 +15% 및 초당 회복량 +1.4 증가. (기가드레인 & 지진 진화 재료)'
     },
     spell_tag: {
       id: 'spell_tag',
@@ -315,7 +485,7 @@ window.GAME_DATA = {
       img: './assets/items/spell-tag.png',
       maxLevel: 5,
       evolvesWeapon: 'shadowball',
-      desc: '모든 기술의 재사용 대기시간이 -8% 감소합니다. (섀도볼 진화 재료)'
+      desc: '모든 기술의 쿨타임이 -8% 감소합니다. (섀도볼 & 제비반환 진화 재료)'
     },
     expert_belt: {
       id: 'expert_belt',
@@ -324,7 +494,7 @@ window.GAME_DATA = {
       img: './assets/items/expert-belt.png',
       maxLevel: 5,
       evolvesWeapon: 'aurasphere',
-      desc: '발사되는 투사체 개수가 +1 증가합니다(최대 +3). (파동탄 진화 재료)'
+      desc: '발사되는 투사체 개수가 +1 증가합니다(최대 +3). (파동탄 & 스톤샤워 진화 재료)'
     },
     choice_scarf: {
       id: 'choice_scarf',
@@ -332,7 +502,8 @@ window.GAME_DATA = {
       icon: '🧣',
       img: './assets/items/choice-scarf.png',
       maxLevel: 5,
-      desc: '포켓몬의 이동속도가 +12% 증가합니다.'
+      evolvesWeapon: 'twister',
+      desc: '포켓몬의 이동속도가 +12% 증가합니다. (회오리바람 진화 재료)'
     },
     lucky_egg: {
       id: 'lucky_egg',

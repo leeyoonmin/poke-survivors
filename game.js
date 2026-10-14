@@ -410,6 +410,7 @@ class PokeSurvivorsGame {
     const evoChainText = [sel.name, ...sel.evolutions.map(e => `Lv.${e.level} ${e.name}`)].join(' ➔ ');
     document.getElementById('selectedPartnerSummary').innerHTML = `
       <h3>파트너: ${sel.name} <small style="color:#cbd5e1;font-weight:600">(${evoChainText})</small></h3>
+      <p style="color:#fde047;font-weight:800;margin-bottom:3px">✨ 고유 특성 [${sel.traitName}]: ${sel.traitDesc}</p>
       <p>${sel.desc}</p>
     `;
   }
@@ -520,6 +521,8 @@ class PokeSurvivorsGame {
       walkAnim: 0,
       dustTimer: 0,
       auraRot: 0,
+      waterShield: starter.id === 'squirtle',
+      waterShieldTimer: 0,
       afterimages: [],
       weapons: {},
       passives: {}
@@ -547,6 +550,8 @@ class PokeSurvivorsGame {
     this.fallingMeteors = []; // Falling Draco Meteors with warning reticles
     this.leechOrbs = []; // Giga Drain life-steal orbs flying to player
     this.lightningBolts = [];
+    this.laserBeams = []; // Hyper Beam / Giga Impact piercing beams
+    this.slashArcs = []; // Aerial Ace / Sacred Sword crescent slashes
     this.particles = [];
     this.floatingTexts = [];
     this.shockwaves = [];
@@ -600,8 +605,12 @@ class PokeSurvivorsGame {
     const magnetLv = p.passives.magnet_coil || 0;
     const luckyLv = p.passives.lucky_egg || 0;
 
+    // Charmander Trait [Blaze]: up to +50% bonus Might as HP drops!
+    const missingHpRatio = p.maxHp > 0 ? Math.max(0, 1 - p.hp / p.maxHp) : 0;
+    const blazeBonus = p.starter.id === 'charmander' ? (1 + missingHpRatio * 0.5) : 1.0;
+
     return {
-      might: p.baseMight * (1 + mightLv * 0.16),
+      might: p.baseMight * (1 + mightLv * 0.16) * blazeBonus,
       area: 1 + areaLv * 0.15,
       regen: p.baseRegen + seedLv * 1.4,
       cooldown: p.baseCooldown * Math.pow(0.92, hasteLv),
@@ -799,6 +808,8 @@ class PokeSurvivorsGame {
 
     for (const wDef of Object.values(window.GAME_DATA.weapons)) {
       if (wDef.isEvolved) continue;
+      // Enforce Exclusive Starter Signature Moves!
+      if (wDef.exclusiveTo && wDef.exclusiveTo !== this.player.starter.id) continue;
       if (wDef.evolveInto && this.player.weapons[wDef.evolveInto]) continue;
 
       const owned = this.player.weapons[wDef.id];
@@ -1011,6 +1022,23 @@ class PokeSurvivorsGame {
     }
     if (p.invulnTimer > 0) p.invulnTimer -= dt;
 
+    // Squirtle Trait [Shell Armor Water Shield]: regenerates every 8 seconds!
+    if (p.starter.id === 'squirtle' && !p.waterShield) {
+      p.waterShieldTimer += dt;
+      if (p.waterShieldTimer >= 8.0) {
+        p.waterShield = true;
+        p.waterShieldTimer = 0;
+        this.floatingTexts.push({
+          x: p.x,
+          y: p.y - 32,
+          text: '💧물의 보호막!',
+          color: '#38bdf8',
+          scale: 1.1,
+          life: 0.8
+        });
+      }
+    }
+
     let moveX = 0;
     let moveY = 0;
     if (this.keys['KeyW'] || this.keys['ArrowUp']) moveY -= 1;
@@ -1133,6 +1161,14 @@ class PokeSurvivorsGame {
     for (let i = this.lightningBolts.length - 1; i >= 0; i--) {
       this.lightningBolts[i].life -= dt;
       if (this.lightningBolts[i].life <= 0) this.lightningBolts.splice(i, 1);
+    }
+    for (let i = this.laserBeams.length - 1; i >= 0; i--) {
+      this.laserBeams[i].life -= dt;
+      if (this.laserBeams[i].life <= 0) this.laserBeams.splice(i, 1);
+    }
+    for (let i = this.slashArcs.length - 1; i >= 0; i--) {
+      this.slashArcs[i].life -= dt;
+      if (this.slashArcs[i].life <= 0) this.slashArcs.splice(i, 1);
     }
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const pt = this.particles[i];
@@ -1358,7 +1394,8 @@ class PokeSurvivorsGame {
             const oy = p.y + Math.sin(ang) * radius;
             for (const e of this.enemies) {
               if (Math.hypot(e.x - ox, e.y - oy) < orbSize + e.radius) {
-                this.damageEnemy(e, def.base.damage * dmgMult * 0.55, def.color, 28);
+                const kb = p.starter.id === 'squirtle' ? 54 : 28;
+                this.damageEnemy(e, def.base.damage * dmgMult * 0.55, def.color, kb);
               }
             }
             this.checkCrateHit(ox, oy, orbSize + 15);
@@ -1376,6 +1413,10 @@ class PokeSurvivorsGame {
           let hitCount = 0;
           for (const e of this.enemies) {
             if (Math.hypot(e.x - p.x, e.y - p.y) <= radius + e.radius) {
+              if (p.starter.id === 'bulbasaur') {
+                e.poisonTimer = 4.0;
+                e.armorBreak = 4.0;
+              }
               this.damageEnemy(e, def.base.damage * dmgMult, def.color, 8);
               e.slowTimer = 0.85;
               hitCount++;
@@ -1396,11 +1437,12 @@ class PokeSurvivorsGame {
       if (w.timer > 0) continue;
       w.timer = def.base.cooldown * Math.pow(0.95, lvl - 1) * st.cooldown;
 
-      // 1. Thunderbolt / Volt Tackle (Fractal Chain Lightning + Sky Strike)
+      // 1. Thunderbolt / Volt Tackle (Fractal Chain Lightning + Sky Strike + Pikachu Static Stun)
       if (w.id === 'thunderbolt' || w.id === 'volttackle') {
         const count = def.base.count + Math.floor(lvl / 3) + st.bonusAmount;
         const chains = def.base.chains + Math.floor(lvl / 2);
-        const dmg = def.base.damage * dmgMult;
+        const speedBonusMult = p.starter.id === 'pikachu' ? Math.max(1, st.speed / 160) : 1;
+        const dmg = def.base.damage * dmgMult * speedBonusMult;
 
         for (let s = 0; s < count; s++) {
           const hitSet = new Set();
@@ -1410,6 +1452,9 @@ class PokeSurvivorsGame {
             const target = this.findNearestEnemy(curX, curY, def.base.range * st.area, hitSet);
             if (!target) break;
             hitSet.add(target);
+            if (p.starter.id === 'pikachu' && Math.random() < 0.28) {
+              target.stunTimer = 0.9;
+            }
             this.damageEnemy(target, dmg * Math.pow(0.86, c), def.color, 20);
 
             // Sky strike on first target for Volt Tackle or high level Thunderbolt
@@ -1503,7 +1548,7 @@ class PokeSurvivorsGame {
             vy: Math.sin(ang) * def.base.speed,
             r: def.base.size * st.area,
             damage: def.base.damage * dmgMult,
-            bounces: def.base.bounces + Math.floor(lvl / 2),
+            bounces: def.base.bounces + Math.floor(lvl / 2) + (p.starter.id === 'gastly' ? 2 : 0),
             color: def.color,
             life: 2.9,
             rot: 0,
@@ -1602,6 +1647,205 @@ class PokeSurvivorsGame {
           });
         }
       }
+
+      // 8. TM01 Hyper Beam / Giga Impact Laser (Piercing High-Energy Laser Beam)
+      else if (w.id === 'hyperbeam' || w.id === 'gigaimpact') {
+        const count = def.base.count + Math.floor(lvl / 3) + st.bonusAmount;
+        const beamW = (def.base.width + lvl * 1.5) * st.area;
+        const beamLen = def.base.range * st.area;
+        // Prioritize highest HP enemy in range
+        let bestTarget = null;
+        let bestHp = -1;
+        for (const e of this.enemies) {
+          if (Math.hypot(e.x - p.x, e.y - p.y) < beamLen && e.hp > bestHp) {
+            bestHp = e.hp;
+            bestTarget = e;
+          }
+        }
+        const baseAng = bestTarget ? Math.atan2(bestTarget.y - p.y, bestTarget.x - p.x) : p.aimAngle;
+
+        for (let i = 0; i < count; i++) {
+          const ang = count === 1 ? baseAng : baseAng + (i - (count - 1) / 2) * 0.28;
+          const x2 = p.x + Math.cos(ang) * beamLen;
+          const y2 = p.y + Math.sin(ang) * beamLen;
+
+          this.laserBeams.push({
+            x1: p.x,
+            y1: p.y,
+            x2,
+            y2,
+            width: beamW,
+            color: def.color,
+            coreColor: '#ffffff',
+            life: 0.34,
+            maxLife: 0.34
+          });
+
+          // Line-segment collision with all enemies along beam
+          const dx = Math.cos(ang);
+          const dy = Math.sin(ang);
+          for (const e of this.enemies) {
+            const ex = e.x - p.x;
+            const ey = e.y - p.y;
+            const proj = ex * dx + ey * dy;
+            if (proj >= -15 && proj <= beamLen) {
+              const perp = Math.abs(ex * (-dy) + ey * dx);
+              if (perp <= beamW * 0.65 + e.radius) {
+                this.damageEnemy(e, def.base.damage * dmgMult, def.color, 34);
+              }
+            }
+          }
+          this.checkCrateHit(p.x + dx * 180, p.y + dy * 180, beamW + 40);
+        }
+        this.screenShake = Math.max(this.screenShake, w.id === 'gigaimpact' ? 0.25 : 0.14);
+      }
+
+      // 9. TM02 Aerial Ace / Sacred Sword (High-Speed Crescent Sword Slashes)
+      else if (w.id === 'aerialace' || w.id === 'sacredsword') {
+        const count = def.base.count + Math.floor(lvl / 2) + st.bonusAmount;
+        const radius = (def.base.radius + lvl * 6) * st.area;
+        const nearest = this.findNearestEnemy(p.x, p.y, radius * 1.6);
+        const baseAng = nearest ? Math.atan2(nearest.y - p.y, nearest.x - p.x) : p.aimAngle;
+
+        for (let i = 0; i < count; i++) {
+          const ang = count === 1 ? baseAng : baseAng + (Math.PI * 2 * i) / count;
+          this.slashArcs.push({
+            x: p.x + Math.cos(ang) * (radius * 0.38),
+            y: p.y + Math.sin(ang) * (radius * 0.38),
+            angle: ang,
+            radius: radius * 0.85,
+            color: def.color,
+            coreColor: def.secondaryColor,
+            life: 0.24,
+            maxLife: 0.24
+          });
+
+          for (const e of this.enemies) {
+            const d = Math.hypot(e.x - p.x, e.y - p.y);
+            if (d <= radius + e.radius) {
+              const eAng = Math.atan2(e.y - p.y, e.x - p.x);
+              const diff = Math.abs(Math.atan2(Math.sin(eAng - ang), Math.cos(eAng - ang)));
+              if (w.id === 'sacredsword' || diff <= 1.25 || d < 42) {
+                this.damageEnemy(e, def.base.damage * dmgMult, def.color, 36);
+              }
+            }
+          }
+        }
+        this.checkCrateHit(p.x, p.y, radius);
+      }
+
+      // 10. TM03 Rock Slide / Stone Edge (Rolling Boulders that Crush & Stun)
+      else if (w.id === 'rockslide' || w.id === 'stoneedge') {
+        const count = def.base.count + Math.floor(lvl / 2) + st.bonusAmount;
+        const nearest = this.findNearestEnemy(p.x, p.y, 480);
+        const baseAng = nearest ? Math.atan2(nearest.y - p.y, nearest.x - p.x) : p.aimAngle;
+
+        for (let i = 0; i < count; i++) {
+          const ang = baseAng + (i - (count - 1) / 2) * 0.32;
+          this.projectiles.push({
+            kind: 'rock',
+            isEvolved: w.id === 'stoneedge',
+            x: p.x,
+            y: p.y,
+            vx: Math.cos(ang) * def.base.speed,
+            vy: Math.sin(ang) * def.base.speed,
+            r: def.base.size * st.area,
+            damage: def.base.damage * dmgMult,
+            pierce: def.base.pierce + Math.floor(lvl / 2),
+            color: def.color,
+            rot: Math.random() * Math.PI,
+            trail: [],
+            life: 1.9,
+            hitSet: new Set()
+          });
+        }
+      }
+
+      // 11. TM04 Twister / Hurricane (Roaming Multi-Hit Vortex Tornadoes)
+      else if (w.id === 'twister' || w.id === 'hurricane') {
+        const count = def.base.count + Math.floor(lvl / 3) + st.bonusAmount;
+        for (let i = 0; i < count; i++) {
+          const ang = (Math.PI * 2 * i) / count + this.elapsedTime * 0.7;
+          this.projectiles.push({
+            kind: 'tornado',
+            isEvolved: w.id === 'hurricane',
+            x: p.x,
+            y: p.y,
+            vx: Math.cos(ang) * def.base.speed,
+            vy: Math.sin(ang) * def.base.speed,
+            r: def.base.size * st.area,
+            damage: def.base.damage * dmgMult,
+            pierce: 999,
+            color: def.color,
+            rot: 0,
+            tickTimer: 0,
+            trail: [],
+            life: def.base.life,
+            hitSet: new Set()
+          });
+        }
+      }
+
+      // 12. TM05 Earthquake / Earth Power (Ground-Shattering Seismic Quake)
+      else if (w.id === 'earthquake' || w.id === 'earthpower') {
+        const radius = (def.base.radius + lvl * 12) * st.area;
+        this.screenShake = Math.max(this.screenShake, w.id === 'earthpower' ? 0.32 : 0.20);
+        this.shockwaves.push({ x: p.x, y: p.y, r: 12, maxR: radius, color: def.color, alpha: 1, hex: true });
+        this.shockwaves.push({ x: p.x, y: p.y, r: 6, maxR: radius * 0.72, color: '#a8a29e', alpha: 0.9, hex: false });
+
+        for (let k = 0; k < 14; k++) {
+          const ang = (Math.PI * 2 * k) / 14 + Math.random() * 0.2;
+          const dist = radius * (0.35 + Math.random() * 0.6);
+          this.particles.push({
+            x: p.x + Math.cos(ang) * dist,
+            y: p.y + Math.sin(ang) * dist,
+            vx: (Math.random() - 0.5) * 40,
+            vy: -30 - Math.random() * 40,
+            color: k % 2 === 0 ? '#eab308' : '#a8a29e',
+            r: 4 + Math.random() * 3,
+            life: 0.38,
+            maxLife: 0.38
+          });
+        }
+
+        for (const e of this.enemies) {
+          if (Math.hypot(e.x - p.x, e.y - p.y) <= radius + e.radius) {
+            this.damageEnemy(e, def.base.damage * dmgMult, def.color, 30);
+            e.slowTimer = 1.8;
+            if (w.id === 'earthpower') e.stunTimer = 0.75;
+          }
+        }
+        this.checkCrateHit(p.x, p.y, radius);
+      }
+
+      // 13. TM06 Icicle Spear / Sheer Cold (Piercing Ice Spears that Freeze Enemies)
+      else if (w.id === 'iciclespear' || w.id === 'sheercold') {
+        const count = def.base.count + Math.floor(lvl / 2) + st.bonusAmount;
+        const nearest = this.findNearestEnemy(p.x, p.y, 550);
+        const baseAng = nearest ? Math.atan2(nearest.y - p.y, nearest.x - p.x) : p.aimAngle;
+
+        for (let i = 0; i < count; i++) {
+          const spread = w.id === 'sheercold'
+            ? baseAng + (i - (count - 1) / 2) * 0.18
+            : baseAng + (i - (count - 1) / 2) * 0.13;
+          this.projectiles.push({
+            kind: 'icicle',
+            isEvolved: w.id === 'sheercold',
+            x: p.x,
+            y: p.y,
+            vx: Math.cos(spread) * def.base.speed,
+            vy: Math.sin(spread) * def.base.speed,
+            r: def.base.size * st.area,
+            damage: def.base.damage * dmgMult,
+            pierce: def.base.pierce + Math.floor(lvl / 2),
+            color: def.color,
+            rot: spread,
+            trail: [],
+            life: 1.5,
+            hitSet: new Set()
+          });
+        }
+      }
     }
   }
 
@@ -1665,6 +1909,16 @@ class PokeSurvivorsGame {
         if (Math.abs(pr.elapsed - 0.55) < dt) {
           pr.hitSet.clear();
         }
+      } else if (pr.kind === 'tornado') {
+        // Swirl slightly while roaming
+        const swirl = Math.sin(this.elapsedTime * 4 + i) * 40;
+        pr.x += (pr.vx + swirl * 0.3) * dt;
+        pr.y += (pr.vy + Math.cos(this.elapsedTime * 4 + i) * 15) * dt;
+        pr.tickTimer -= dt;
+        if (pr.tickTimer <= 0) {
+          pr.tickTimer = 0.26;
+          pr.hitSet.clear();
+        }
       } else {
         pr.x += pr.vx * dt;
         pr.y += pr.vy * dt;
@@ -1701,7 +1955,19 @@ class PokeSurvivorsGame {
         if (pr.hitSet.has(e)) continue;
         if (Math.hypot(pr.x - e.x, pr.y - e.y) <= pr.r + e.radius) {
           pr.hitSet.add(e);
-          this.damageEnemy(e, pr.damage, pr.color, 22);
+          this.damageEnemy(e, pr.damage, pr.color, pr.kind === 'rock' ? 35 : 22);
+
+          // Status Effects from Projectiles
+          if ((pr.kind === 'fire' || pr.kind === 'blastburn') && this.player.starter.id === 'charmander') {
+            e.burnTimer = 3.0;
+            e.burnDmg = Math.max(4, Math.round(pr.damage * 0.28));
+          }
+          if (pr.kind === 'rock' && Math.random() < (pr.isEvolved ? 0.6 : 0.35)) {
+            e.stunTimer = 0.9;
+          }
+          if (pr.kind === 'icicle' && Math.random() < (pr.isEvolved ? 0.65 : 0.35)) {
+            e.freezeTimer = 1.35;
+          }
 
           if (pr.kind === 'blastburn') {
             this.shockwaves.push({ x: pr.x, y: pr.y, r: 5, maxR: 42, color: '#f97316', alpha: 0.85 });
@@ -1761,8 +2027,13 @@ class PokeSurvivorsGame {
   }
 
   damageEnemy(e, rawDamage, color = '#fff', knockback = 14) {
-    const isCrit = Math.random() < 0.14;
-    const dmg = Math.max(1, Math.round(rawDamage * (isCrit ? 1.5 : 1) * (0.92 + Math.random() * 0.16)));
+    const isRiolu = this.player.starter.id === 'riolu';
+    const critChance = isRiolu ? 0.39 : 0.14;
+    const critMult = isRiolu ? 2.0 : 1.5;
+    const isCrit = Math.random() < critChance;
+    const bossBonus = (isRiolu && (e.isBoss || e.isElite)) ? 1.25 : 1.0;
+    const vulnMult = (e.armorBreak && e.armorBreak > 0) ? 1.25 : 1.0;
+    const dmg = Math.max(1, Math.round(rawDamage * bossBonus * vulnMult * (isCrit ? critMult : 1) * (0.92 + Math.random() * 0.16)));
     e.hp -= dmg;
     e.flashTimer = 0.11;
     window.sound.playHit();
@@ -1789,6 +2060,46 @@ class PokeSurvivorsGame {
   damagePlayer(rawDamage) {
     const p = this.player;
     if (p.invulnTimer > 0) return;
+
+    // Gastly Trait [Levitate]: 30% Dodge Chance!
+    if (p.starter.id === 'gastly' && Math.random() < 0.30) {
+      p.invulnTimer = 0.25;
+      this.floatingTexts.push({
+        x: p.x,
+        y: p.y - 26,
+        text: '👻회피(MISS)!',
+        color: '#c084fc',
+        scale: 1.15,
+        life: 0.65
+      });
+      return;
+    }
+
+    // Squirtle Trait [Shell Armor Water Shield]: blocks 1 hit & knocks back enemies!
+    if (p.waterShield) {
+      p.waterShield = false;
+      p.waterShieldTimer = 0;
+      p.invulnTimer = 0.45;
+      window.sound.playHeal();
+      this.shockwaves.push({ x: p.x, y: p.y, r: 8, maxR: 130, color: '#38bdf8', alpha: 0.95 });
+      this.floatingTexts.push({
+        x: p.x,
+        y: p.y - 28,
+        text: '🛡️보호막 방어!',
+        color: '#38bdf8',
+        scale: 1.2,
+        life: 0.75
+      });
+      for (const e of this.enemies) {
+        const d = Math.hypot(e.x - p.x, e.y - p.y) || 1;
+        if (d < 150 && !e.isBoss) {
+          e.x += ((e.x - p.x) / d) * 65;
+          e.y += ((e.y - p.y) / d) * 65;
+        }
+      }
+      return;
+    }
+
     const st = this.getComputedStats();
     const dmg = Math.max(1, rawDamage - st.armor);
     p.hp -= dmg;
@@ -1868,6 +2179,19 @@ class PokeSurvivorsGame {
 
       if (e.flashTimer > 0) e.flashTimer -= dt;
       if (e.slowTimer > 0) e.slowTimer -= dt;
+      if (e.stunTimer > 0) e.stunTimer -= dt;
+      if (e.freezeTimer > 0) e.freezeTimer -= dt;
+      if (e.armorBreak > 0) e.armorBreak -= dt;
+
+      // Burn & Poison DoT tick
+      if (e.burnTimer > 0) {
+        e.burnTimer -= dt;
+        e.hp -= (e.burnDmg || 8) * dt;
+      }
+      if (e.poisonTimer > 0) {
+        e.poisonTimer -= dt;
+        e.hp -= 10 * dt;
+      }
 
       const dx = p.x - e.x;
       const dy = p.y - e.y;
@@ -1878,6 +2202,12 @@ class PokeSurvivorsGame {
         const r = Math.hypot(this.width / 2, this.height / 2) + 40;
         e.x = p.x + Math.cos(ang) * r;
         e.y = p.y + Math.sin(ang) * r;
+        continue;
+      }
+
+      const isImmobilized = (e.stunTimer > 0) || (e.freezeTimer > 0);
+      if (isImmobilized && !e.isBoss) {
+        // Stunned or frozen enemies cannot move!
         continue;
       }
 
@@ -2303,6 +2633,12 @@ class PokeSurvivorsGame {
       ctx.scale(1 + squash, 1 - squash);
       if (e.flashTimer > 0) {
         ctx.filter = 'brightness(3) contrast(2)';
+      } else if (e.freezeTimer > 0) {
+        ctx.filter = 'hue-rotate(175deg) saturate(2.2) brightness(1.35)';
+      } else if (e.poisonTimer > 0) {
+        ctx.filter = 'hue-rotate(250deg) saturate(1.8)';
+      } else if (e.burnTimer > 0) {
+        ctx.filter = 'sepia(0.8) saturate(3) hue-rotate(-25deg)';
       } else if (e.slowTimer > 0) {
         ctx.filter = 'hue-rotate(90deg)';
       }
@@ -2314,6 +2650,15 @@ class PokeSurvivorsGame {
         ctx.drawImage(img, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
       }
       ctx.restore();
+
+      // Status overhead badge (Freeze / Stun)
+      if (e.freezeTimer > 0 || e.stunTimer > 0) {
+        ctx.save();
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(e.freezeTimer > 0 ? '❄️' : '⚡', ex, ey - e.radius - 6);
+        ctx.restore();
+      }
     }
 
     // 7. Leech Orbs (Giga Drain energy spheres)
@@ -2364,6 +2709,19 @@ class PokeSurvivorsGame {
     const hpRatio = Math.max(0, p.hp / p.maxHp);
     ctx.fillStyle = hpRatio > 0.5 ? '#4ade80' : hpRatio > 0.25 ? '#facc15' : '#ef4444';
     ctx.fillRect(px - hpW / 2, py + 27, hpW * hpRatio, hpH);
+
+    // Squirtle Water Shield Visual Sphere
+    if (p.waterShield) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.88)';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(px, py - 2, 31 + Math.sin(this.elapsedTime * 6) * 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
 
     // 9. Orbiting Aqua Ring / Hydro Cannon (With Water Ribbon Tails & Vortex)
     const orbitW = p.weapons.hydrocannon || p.weapons.aquaring;
@@ -2461,6 +2819,45 @@ class PokeSurvivorsGame {
         ctx.beginPath();
         ctx.arc(0, 0, pr.r * 0.8, 0, Math.PI * 2);
         ctx.fill();
+      } else if (pr.kind === 'rock') {
+        // Rolling Boulder / Stone Edge Jagged Crystal
+        ctx.translate(sx, sy);
+        ctx.rotate(pr.rot);
+        ctx.fillStyle = pr.isEvolved ? '#d97706' : '#78716c';
+        ctx.strokeStyle = pr.isEvolved ? '#fef08a' : '#d6d3d1';
+        ctx.lineWidth = 2.5;
+        this.drawStarPolygon(ctx, 0, 0, 7, pr.r * 1.1, pr.r * 0.82, 0);
+        ctx.fill();
+        ctx.stroke();
+      } else if (pr.kind === 'tornado') {
+        // Swirling Vortex Tornado
+        ctx.translate(sx, sy);
+        ctx.rotate(pr.rot * 1.6);
+        ctx.strokeStyle = pr.isEvolved ? '#10b981' : '#34d399';
+        ctx.lineWidth = 3;
+        for (let ring = 0; ring < 3; ring++) {
+          ctx.beginPath();
+          ctx.arc(0, 0, pr.r * (0.4 + ring * 0.3), ring, ring + Math.PI * 1.35);
+          ctx.stroke();
+        }
+      } else if (pr.kind === 'icicle') {
+        // Piercing Crystal Ice Spear
+        const ang = Math.atan2(pr.vy, pr.vx);
+        ctx.translate(sx, sy);
+        ctx.rotate(ang);
+        ctx.fillStyle = '#e0f2fe';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.moveTo(pr.r * 1.6, 0);
+        ctx.lineTo(-pr.r * 0.9, -pr.r * 0.55);
+        ctx.lineTo(-pr.r * 0.5, 0);
+        ctx.lineTo(-pr.r * 0.9, pr.r * 0.55);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
       } else {
         // Fireball / Blast Burn multi-core gradient
         const grad = ctx.createRadialGradient(sx, sy, 2, sx, sy, pr.r * 1.2);
@@ -2474,6 +2871,49 @@ class PokeSurvivorsGame {
         ctx.fill();
       }
 
+      ctx.restore();
+    }
+
+    // 10b. Hyper Beam / Giga Impact Piercing Laser Beams
+    for (const lb of this.laserBeams) {
+      const ratio = Math.max(0, lb.life / lb.maxLife);
+      ctx.save();
+      ctx.globalAlpha = ratio;
+      ctx.strokeStyle = lb.color;
+      ctx.shadowColor = lb.color;
+      ctx.shadowBlur = 22;
+      ctx.lineWidth = lb.width * ratio;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(lb.x1 - camX, lb.y1 - camY);
+      ctx.lineTo(lb.x2 - camX, lb.y2 - camY);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = lb.width * 0.42 * ratio;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 10c. Aerial Ace / Sacred Sword Crescent Slashes
+    for (const sl of this.slashArcs) {
+      const ratio = Math.max(0, sl.life / sl.maxLife);
+      ctx.save();
+      ctx.translate(sl.x - camX, sl.y - camY);
+      ctx.rotate(sl.angle);
+      ctx.globalAlpha = ratio;
+      ctx.strokeStyle = sl.color;
+      ctx.shadowColor = sl.color;
+      ctx.shadowBlur = 16;
+      ctx.lineWidth = 10 * ratio;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(0, 0, sl.radius, -0.95, 0.95);
+      ctx.stroke();
+
+      ctx.strokeStyle = sl.coreColor || '#ffffff';
+      ctx.lineWidth = 4 * ratio;
+      ctx.stroke();
       ctx.restore();
     }
 
