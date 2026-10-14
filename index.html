@@ -71,11 +71,13 @@
             <div id="stageGrid" class="stage-grid step-stage-grid"></div>
           </div>
 
-          <footer class="lobby-footer">
+          <footer class="lobby-footer sticky-bottom-bar">
             <div id="selectedStageSummary" class="partner-summary"></div>
-            <button id="btnGoStep2" class="btn-start" type="button">
-              <span>다음: 파트너 포켓몬 선택 ➔</span>
-            </button>
+            <div class="footer-btn-row">
+              <button id="btnGoStep2" class="btn-start" type="button">
+                <span>다음: 캐릭터 선택 ➔</span>
+              </button>
+            </div>
           </footer>
         </div>
 
@@ -83,18 +85,22 @@
         <div id="lobbyStepPokemon" class="lobby-step-wrap hidden">
           <div class="section-header">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <button id="btnBackStep1" class="btn-secondary" type="button">◀ 스테이지 다시 선택</button>
               <h2 id="step2StageLabel">STEP 2. 파트너 포켓몬 선택</h2>
             </div>
           </div>
 
           <div id="starterGrid" class="starter-grid"></div>
 
-          <footer class="lobby-footer">
+          <footer class="lobby-footer sticky-bottom-bar">
             <div id="selectedPartnerSummary" class="partner-summary"></div>
-            <button id="btnStartGame" class="btn-start" type="button">
-              <span>⚔️ 모험 출발하기</span>
-            </button>
+            <div class="footer-btn-row two-btns">
+              <button id="btnBackStep1" class="btn-back-stage" type="button">
+                <span>◀ 스테이지 선택</span>
+              </button>
+              <button id="btnStartGame" class="btn-start" type="button">
+                <span>⚔️ 모험 출발하기</span>
+              </button>
+            </div>
           </footer>
         </div>
       </div>
