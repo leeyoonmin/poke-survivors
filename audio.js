@@ -1,4 +1,4 @@
-// Web Audio API Chiptune & SFX Engine for Poké Survivors
+// Web Audio API Chiptune & SFX Engine for Poké Survivors (with PWA Background Auto-Suspend)
 class SoundEngine {
   constructor() {
     this.ctx = null;
@@ -6,17 +6,47 @@ class SoundEngine {
     this.bgmPlaying = false;
     this.bgmTimer = null;
     this.step = 0;
+    this.bgSuspended = false;
+    this.bindLifecycle();
+  }
+
+  bindLifecycle() {
+    const suspendAudio = () => {
+      this.bgSuspended = true;
+      if (this.ctx && this.ctx.state === 'running') {
+        this.ctx.suspend().catch(() => {});
+      }
+    };
+
+    const resumeAudio = () => {
+      if (document.hidden) return;
+      this.bgSuspended = false;
+      if (!this.muted && this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) suspendAudio();
+      else resumeAudio();
+    });
+    window.addEventListener('pagehide', suspendAudio);
+    window.addEventListener('blur', suspendAudio);
+    window.addEventListener('focus', resumeAudio);
+    window.addEventListener('pageshow', resumeAudio);
+    window.addEventListener('pointerdown', resumeAudio, { passive: true });
   }
 
   init() {
+    if (document.hidden || this.bgSuspended) return;
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
       }
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    if (this.ctx && this.ctx.state === 'suspended' && !this.muted) {
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -25,16 +55,24 @@ class SoundEngine {
     localStorage.setItem('poke_muted', String(this.muted));
     if (this.muted) {
       this.stopBGM();
-    } else if (window.game && window.game.state === 'PLAYING') {
-      this.startBGM();
+      if (this.ctx && this.ctx.state === 'running') {
+        this.ctx.suspend().catch(() => {});
+      }
+    } else {
+      if (this.ctx && this.ctx.state === 'suspended' && !document.hidden) {
+        this.ctx.resume().catch(() => {});
+      }
+      if (window.game && window.game.state === 'PLAYING') {
+        this.startBGM();
+      }
     }
     return this.muted;
   }
 
   playTone(freq, type, duration, vol = 0.08, slideTo = null, delay = 0) {
-    if (this.muted) return;
+    if (this.muted || document.hidden || this.bgSuspended) return;
     this.init();
-    if (!this.ctx) return;
+    if (!this.ctx || this.ctx.state !== 'running') return;
 
     const now = this.ctx.currentTime + delay;
     const osc = this.ctx.createOscillator();
@@ -75,7 +113,6 @@ class SoundEngine {
   }
 
   playLevelUp() {
-    // Classic RPG fanfare
     const notes = [
       { f: 440, d: 0.09, t: 0 },
       { f: 440, d: 0.09, t: 0.1 },
@@ -107,7 +144,6 @@ class SoundEngine {
     this.bgmPlaying = true;
     this.step = 0;
 
-    // Upbeat 8-bit Pokemon battle style bass & lead loop
     const leadNotes = [
       330, 392, 440, 392, 494, 440, 392, 330,
       294, 349, 392, 349, 440, 392, 349, 294,
@@ -120,7 +156,7 @@ class SoundEngine {
     ];
 
     this.bgmTimer = setInterval(() => {
-      if (this.muted || !this.bgmPlaying) return;
+      if (this.muted || !this.bgmPlaying || document.hidden || this.bgSuspended) return;
       if (window.game && window.game.state !== 'PLAYING') return;
 
       const lead = leadNotes[this.step % leadNotes.length];

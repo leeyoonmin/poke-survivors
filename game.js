@@ -1100,11 +1100,13 @@ class PokeSurvivorsGame {
     const dt = rawDt * (this.gameSpeed || 1.0);
     this.lastFrameTime = now;
 
-    if (this.state === 'PLAYING') {
-      this.update(dt);
-    }
-    if (this.state !== 'LOBBY') {
-      this.draw();
+    if (!document.hidden) {
+      if (this.state === 'PLAYING') {
+        this.update(dt);
+      }
+      if (this.state !== 'LOBBY') {
+        this.draw();
+      }
     }
 
     requestAnimationFrame((t) => this.loop(t));
