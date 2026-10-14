@@ -1,4 +1,4 @@
-const CACHE_NAME = 'poke-survivors-v3';
+const CACHE_NAME = 'poke-survivors-v4';
 const SPRITE_IDS = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 19, 23, 25, 26,
   41, 50, 66, 81, 88, 92, 93, 94, 95, 109, 111, 123,
@@ -53,6 +53,32 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  const isCodeFile =
+    event.request.mode === 'navigate' ||
+    url.pathname.endsWith('/') ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.json');
+
+  if (isCodeFile) {
+    // Network-First for code/HTML so installed PWAs always get live updates immediately
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-First for static sprite/image assets
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
