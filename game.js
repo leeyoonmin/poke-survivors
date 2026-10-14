@@ -622,27 +622,46 @@ class PokeSurvivorsGame {
         if (isCleared) statusHtml = `<span class="stage-status-pill cleared">🏆 CLEAR 완료</span>`;
         else if (!isUnlocked) statusHtml = `<span class="stage-status-pill lock">🔒 STAGE ${stg.id - 1} 클리어 필요</span>`;
 
-        const bossIconsHtml = (stg.bosses || []).map(b => `
-          <div style="display:flex;flex-direction:column;align-items:center;background:#fff;border:1.5px solid #504020;border-radius:5px;padding:3px 8px">
-            <img src="./assets/sprites/${b.dex}.png" style="width:32px;height:32px;object-fit:contain" alt="${b.name}" />
-            <span style="font-size:0.72rem;font-weight:900;color:#111827">${b.name}</span>
-          </div>
-        `).join('');
+        const cleanBossName = (raw) => String(raw || '').replace(/^\[.*?\]\s*/, '').split(' ').pop();
+        const bossIconsHtml = (stg.bosses || []).map((b, bIdx) => {
+          const isFinal = bIdx === stg.bosses.length - 1;
+          const timeLbl = bIdx === 0 ? '1분' : bIdx === 1 ? '2분' : '4분 보스';
+          return `
+            <div class="sc-boss-chip ${isFinal ? 'final' : ''}">
+              <img src="./assets/sprites/${b.dex}.png" alt="${b.name}" />
+              <div>
+                <div style="font-size:0.62rem;color:${isFinal ? '#dc2626' : '#64748b'};font-weight:900">${timeLbl}</div>
+                <span>${cleanBossName(b.name)}</span>
+              </div>
+            </div>
+          `;
+        }).join('<span style="color:#94a3b8;font-weight:900;font-size:0.75rem">➔</span>');
 
+        const finalBoss = stg.bosses[stg.bosses.length - 1];
         card.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="sc-header">
+            <div class="sc-header-left">
+              <span class="sc-stage-num">STAGE 0${stg.id}</span>
+              <span class="sc-stage-title">${stg.icon} ${stg.name.replace(/^STAGE \d+\.\s*/, '')}</span>
+            </div>
             ${statusHtml}
-            <span class="stage-meta">🪙 코인 x${stg.coinMult} · 첫클리어 +${stg.clearBonus}</span>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;gap:14px;width:100%">
-            <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" style="width:68px;height:68px" alt="${stg.name}" />
-            <div style="text-align:left">
-              <div class="stage-title" style="font-size:1.12rem">${stg.icon} ${stg.name}</div>
-              <div style="font-size:0.82rem;font-weight:800;color:#334155;line-height:1.3;margin-top:2px">${stg.sub}</div>
+          <div class="sc-body">
+            <div class="sc-boss-pedestal">
+              <img src="./assets/sprites/${stg.bossImg}.png" alt="${finalBoss.name}" />
+              <span>👑 ${cleanBossName(finalBoss.name)}</span>
+            </div>
+            <div class="sc-info-col">
+              <div class="sc-desc">${stg.sub}</div>
+              <div class="sc-reward-row">
+                <span class="sc-reward-pill">🪙 코인 획득 x${stg.coinMult}배</span>
+                <span class="sc-reward-pill">🎁 첫 클리어 +${stg.clearBonus} 코인</span>
+              </div>
             </div>
           </div>
-          <div style="display:flex;gap:8px;justify-content:center;align-items:center;width:100%">
-            ${bossIconsHtml}
+          <div class="sc-boss-footer">
+            <span class="sc-boss-footer-label">🚨 출현 보스</span>
+            <div class="sc-boss-chain">${bossIconsHtml}</div>
           </div>
         `;
 
@@ -686,32 +705,47 @@ class PokeSurvivorsGame {
         card.className = `starter-card carousel-slide-card ${st.id === this.selectedStarterId ? 'selected' : ''}`;
         const startW = window.GAME_DATA.weapons[st.startWeapon];
 
-        const evoImgs = st.evolutions
-          .map(ev => `
-            <div style="display:flex;align-items:center;gap:3px">
-              <span style="font-size:0.75rem;color:#fef08a;font-weight:900">➔ Lv.${ev.level}</span>
-              <img src="./assets/art/${ev.dex}.png" style="width:36px;height:36px;object-fit:contain" alt="${ev.name}" />
-              <span style="font-size:0.78rem;font-weight:900">${ev.name}</span>
+        const fullEvoSteps = [
+          { level: 1, name: st.name, dex: st.dex },
+          ...st.evolutions
+        ];
+        const evoChainHtml = fullEvoSteps
+          .map((ev, eIdx) => `
+            ${eIdx > 0 ? '<span class="pc-evo-arrow">➔</span>' : ''}
+            <div class="pc-evo-step">
+              <small>Lv.${ev.level}</small>
+              <img src="./assets/art/${ev.dex}.png" alt="${ev.name}" />
+              <span>${ev.name}</span>
             </div>
           `)
           .join('');
 
         card.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-            <span class="type-pill" style="background:${st.typeColor}">${st.type} 타입</span>
-            <span class="starter-name" style="font-size:1.15rem">${st.name}</span>
-            <span class="starter-bonus">${st.bonusText}</span>
+          <div class="pc-header">
+            <div class="pc-title-group">
+              <span class="type-pill" style="background:${st.typeColor}">${st.type}</span>
+              <span class="pc-name">${st.name}</span>
+            </div>
+            <span class="pc-bonus-badge">${st.bonusText}</span>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;gap:14px">
-            <img class="starter-art" src="./assets/art/${st.dex}.png" style="width:72px;height:72px" alt="${st.name}" />
-            <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-start">${evoImgs}</div>
+          <div class="pc-hero-section">
+            <div class="pc-main-portrait">
+              <img src="./assets/art/${st.dex}.png" alt="${st.name}" />
+            </div>
+            <div class="pc-evo-box">
+              <div class="pc-evo-label">🧬 레벨업 자동 진화 트리</div>
+              <div class="pc-evo-chain">${evoChainHtml}</div>
+            </div>
           </div>
-          <div style="background:rgba(17,24,39,0.62);border:1.5px solid #93c5fd;border-radius:5px;padding:5px 9px;width:100%;text-align:left;font-size:0.78rem;line-height:1.3">
-            <span style="color:#fde047;font-weight:900">✨ 특성 [${st.traitName}]:</span>
-            <span style="color:#ffffff;font-weight:700"> ${st.traitDesc}</span>
-          </div>
-          <div class="starter-weapon-tag" style="width:100%;text-align:center;font-size:0.78rem;padding:4px 8px">
-            ${startW.icon} 전용 시작 기술: [${startW.name}] — ${startW.desc}
+          <div class="pc-specs-footer">
+            <div class="pc-spec-row">
+              <span class="pc-spec-tag trait">✨ 특성 · ${st.traitName}</span>
+              <span class="pc-spec-text">${st.traitDesc}</span>
+            </div>
+            <div class="pc-spec-row">
+              <span class="pc-spec-tag weapon">${startW.icon} 전용기 · ${startW.name}</span>
+              <span class="pc-spec-text">${startW.desc}</span>
+            </div>
           </div>
         `;
 
