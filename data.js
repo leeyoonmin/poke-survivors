@@ -556,6 +556,195 @@ window.GAME_DATA = {
     { time: 480, dex: 150, name: '초전설 뮤츠', hp: 72000, speed: 142, damage: 62, scale: 2.6, isFinal: true }
   ],
 
+  stages: [
+    {
+      id: 1,
+      name: 'STAGE 1. 상록숲 초원',
+      sub: '트레이너의 첫 관문 · 초록 숲과 오솔길',
+      icon: '🌲',
+      themeColor: '#22c55e',
+      mapTint: 'rgba(16, 185, 129, 0.0)',
+      roadTint: 'rgba(234, 179, 8, 0.0)',
+      duration: 300,
+      hpMult: 1.0,
+      dmgMult: 1.0,
+      coinMult: 1.0,
+      clearBonus: 150,
+      bossImg: 112,
+      waves: [
+        { start: 0, end: 75, spawnInterval: 0.56, spawnBatch: 1, maxEnemies: 55, eliteChance: 0.0, pool: [
+          { dex: 10, name: '캐터피', hp: 11, speed: 52, damage: 4, exp: 3, scale: 0.95 },
+          { dex: 19, name: '꼬렛', hp: 13, speed: 62, damage: 5, exp: 3, scale: 1.0 },
+          { dex: 16, name: '구구', hp: 14, speed: 68, damage: 5, exp: 3, scale: 1.0 }
+        ]},
+        { start: 75, end: 180, spawnInterval: 0.34, spawnBatch: 2, maxEnemies: 120, eliteChance: 0.03, pool: [
+          { dex: 41, name: '주뱃', hp: 32, speed: 84, damage: 9, exp: 4, scale: 1.0 },
+          { dex: 50, name: '디그다', hp: 38, speed: 78, damage: 10, exp: 4, scale: 1.0 },
+          { dex: 23, name: '아보', hp: 46, speed: 76, damage: 11, exp: 5, scale: 1.05 }
+        ]},
+        { start: 180, end: 9999, spawnInterval: 0.20, spawnBatch: 4, maxEnemies: 240, eliteChance: 0.07, pool: [
+          { dex: 66, name: '알통몬', hp: 125, speed: 94, damage: 16, exp: 7, scale: 1.1 },
+          { dex: 88, name: '질퍽이', hp: 160, speed: 88, damage: 18, exp: 8, scale: 1.15 },
+          { dex: 111, name: '뿔카노', hp: 210, speed: 96, damage: 20, exp: 9, scale: 1.18 }
+        ]}
+      ],
+      bosses: [
+        { time: 90, dex: 95, name: '우두머리 롱스톤', hp: 950, speed: 84, damage: 16, scale: 2.15 },
+        { time: 180, dex: 143, name: '광폭화 잠만보', hp: 3600, speed: 92, damage: 24, scale: 2.3 },
+        { time: 300, dex: 112, name: '[보스] 대지의 코뿌리', hp: 11500, speed: 112, damage: 34, scale: 2.45, isFinal: true }
+      ]
+    },
+    {
+      id: 2,
+      name: 'STAGE 2. 블루시티 해안 협곡',
+      sub: '거센 해류와 빙결의 폭풍이 몰아치는 해안',
+      icon: '🌊',
+      themeColor: '#38bdf8',
+      mapTint: 'rgba(14, 165, 233, 0.22)',
+      roadTint: 'rgba(56, 189, 248, 0.25)',
+      duration: 360,
+      hpMult: 1.45,
+      dmgMult: 1.25,
+      coinMult: 1.4,
+      clearBonus: 250,
+      bossImg: 144,
+      waves: [
+        { start: 0, end: 90, spawnInterval: 0.50, spawnBatch: 1, maxEnemies: 65, eliteChance: 0.01, pool: [
+          { dex: 16, name: '구구', hp: 16, speed: 70, damage: 6, exp: 3, scale: 1.0 },
+          { dex: 41, name: '주뱃', hp: 20, speed: 78, damage: 7, exp: 3, scale: 1.0 },
+          { dex: 7, name: '야생 꼬부기', hp: 24, speed: 66, damage: 7, exp: 4, scale: 1.0 }
+        ]},
+        { start: 90, end: 210, spawnInterval: 0.30, spawnBatch: 3, maxEnemies: 150, eliteChance: 0.04, pool: [
+          { dex: 81, name: '코일', hp: 62, speed: 94, damage: 12, exp: 5, scale: 1.05 },
+          { dex: 8, name: '어니부기', hp: 85, speed: 86, damage: 14, exp: 6, scale: 1.1 },
+          { dex: 123, name: '스라크', hp: 95, speed: 108, damage: 15, exp: 7, scale: 1.12 }
+        ]},
+        { start: 210, end: 9999, spawnInterval: 0.16, spawnBatch: 5, maxEnemies: 280, eliteChance: 0.09, pool: [
+          { dex: 123, name: '스라크', hp: 220, speed: 118, damage: 22, exp: 9, scale: 1.15 },
+          { dex: 130, name: '야생 갸라도스', hp: 310, speed: 106, damage: 26, exp: 11, scale: 1.25 },
+          { dex: 148, name: '신뇽', hp: 280, speed: 112, damage: 24, exp: 11, scale: 1.2 }
+        ]}
+      ],
+      bosses: [
+        { time: 90, dex: 130, name: '폭주하는 갸라도스', hp: 1900, speed: 96, damage: 22, scale: 2.25 },
+        { time: 210, dex: 9, name: '심해의 거북왕', hp: 7200, speed: 102, damage: 30, scale: 2.35 },
+        { time: 360, dex: 144, name: '[전설] 빙조 프리져', hp: 24000, speed: 122, damage: 42, scale: 2.5, isFinal: true }
+      ]
+    },
+    {
+      id: 3,
+      name: 'STAGE 3. 보라타운 유령탑',
+      sub: '보라빛 안개와 고스트·번개 군단이 배회하는 성소',
+      icon: '👻',
+      themeColor: '#c084fc',
+      mapTint: 'rgba(109, 40, 217, 0.28)',
+      roadTint: 'rgba(139, 92, 246, 0.22)',
+      duration: 420,
+      hpMult: 2.0,
+      dmgMult: 1.5,
+      coinMult: 1.8,
+      clearBonus: 400,
+      bossImg: 145,
+      waves: [
+        { start: 0, end: 90, spawnInterval: 0.46, spawnBatch: 2, maxEnemies: 75, eliteChance: 0.02, pool: [
+          { dex: 92, name: '고오스', hp: 22, speed: 74, damage: 7, exp: 4, scale: 1.0 },
+          { dex: 41, name: '주뱃', hp: 24, speed: 82, damage: 7, exp: 4, scale: 1.0 },
+          { dex: 109, name: '또가스', hp: 28, speed: 68, damage: 8, exp: 4, scale: 1.05 }
+        ]},
+        { start: 90, end: 240, spawnInterval: 0.26, spawnBatch: 3, maxEnemies: 180, eliteChance: 0.06, pool: [
+          { dex: 93, name: '고우스트', hp: 90, speed: 98, damage: 15, exp: 6, scale: 1.1 },
+          { dex: 88, name: '질퍽이', hp: 120, speed: 88, damage: 17, exp: 7, scale: 1.15 },
+          { dex: 64, name: '윤겔라', hp: 105, speed: 100, damage: 16, exp: 7, scale: 1.1 }
+        ]},
+        { start: 240, end: 9999, spawnInterval: 0.14, spawnBatch: 6, maxEnemies: 320, eliteChance: 0.11, pool: [
+          { dex: 94, name: '그림자 팬텀', hp: 320, speed: 120, damage: 26, exp: 11, scale: 1.2 },
+          { dex: 125, name: '에레브', hp: 350, speed: 116, damage: 28, exp: 12, scale: 1.2 },
+          { dex: 212, name: '핫삼', hp: 390, speed: 124, damage: 30, exp: 13, scale: 1.22 }
+        ]}
+      ],
+      bosses: [
+        { time: 110, dex: 94, name: '심연의 다크 팬텀', hp: 3400, speed: 106, damage: 26, scale: 2.3 },
+        { time: 250, dex: 142, name: '고대 익룡 프테라', hp: 14000, speed: 124, damage: 36, scale: 2.4 },
+        { time: 420, dex: 145, name: '[전설] 뇌신 썬더', hp: 42000, speed: 132, damage: 48, scale: 2.55, isFinal: true }
+      ]
+    },
+    {
+      id: 4,
+      name: 'STAGE 4. 홍련섬 화산 분화구',
+      sub: '붉게 타오르는 용암 대지와 고대 괴수들의 격전지',
+      icon: '🌋',
+      themeColor: '#f97316',
+      mapTint: 'rgba(220, 38, 38, 0.28)',
+      roadTint: 'rgba(249, 115, 22, 0.30)',
+      duration: 480,
+      hpMult: 2.7,
+      dmgMult: 1.8,
+      coinMult: 2.4,
+      clearBonus: 650,
+      bossImg: 383,
+      waves: [
+        { start: 0, end: 100, spawnInterval: 0.44, spawnBatch: 2, maxEnemies: 85, eliteChance: 0.03, pool: [
+          { dex: 50, name: '디그다', hp: 28, speed: 78, damage: 8, exp: 4, scale: 1.0 },
+          { dex: 74, name: '꼬마돌', hp: 34, speed: 68, damage: 9, exp: 4, scale: 1.05 },
+          { dex: 5, name: '야생 리자드', hp: 38, speed: 84, damage: 10, exp: 5, scale: 1.08 }
+        ]},
+        { start: 100, end: 260, spawnInterval: 0.22, spawnBatch: 4, maxEnemies: 210, eliteChance: 0.08, pool: [
+          { dex: 126, name: '마그마', hp: 135, speed: 104, damage: 18, exp: 8, scale: 1.15 },
+          { dex: 111, name: '뿔카노', hp: 165, speed: 98, damage: 20, exp: 8, scale: 1.18 },
+          { dex: 229, name: '헬가', hp: 150, speed: 114, damage: 20, exp: 9, scale: 1.15 }
+        ]},
+        { start: 260, end: 9999, spawnInterval: 0.12, spawnBatch: 7, maxEnemies: 380, eliteChance: 0.13, pool: [
+          { dex: 6, name: '야생 리자몽', hp: 460, speed: 124, damage: 32, exp: 14, scale: 1.25 },
+          { dex: 112, name: '코뿌리', hp: 540, speed: 112, damage: 35, exp: 15, scale: 1.28 },
+          { dex: 248, name: '마기라스', hp: 650, speed: 118, damage: 38, exp: 17, scale: 1.32 }
+        ]}
+      ],
+      bosses: [
+        { time: 120, dex: 146, name: '[전설] 화조 파이어', hp: 5800, speed: 112, damage: 30, scale: 2.35 },
+        { time: 280, dex: 248, name: '사막의 폭군 마기라스', hp: 24000, speed: 118, damage: 42, scale: 2.45 },
+        { time: 480, dex: 383, name: '[초전설] 대륙의 신 그란돈', hp: 75000, speed: 128, damage: 56, scale: 2.65, isFinal: true }
+      ]
+    },
+    {
+      id: 5,
+      name: 'STAGE 5. 석영고원 신들의 성전',
+      sub: '드래곤 군단과 창조신 아르세우스가 강림하는 최종 결전!',
+      icon: '🏛️',
+      themeColor: '#facc15',
+      mapTint: 'rgba(234, 179, 8, 0.22)',
+      roadTint: 'rgba(250, 204, 21, 0.28)',
+      duration: 540,
+      hpMult: 3.6,
+      dmgMult: 2.1,
+      coinMult: 3.5,
+      clearBonus: 1200,
+      bossImg: 493,
+      waves: [
+        { start: 0, end: 110, spawnInterval: 0.40, spawnBatch: 2, maxEnemies: 95, eliteChance: 0.04, pool: [
+          { dex: 147, name: '미뇽', hp: 36, speed: 84, damage: 10, exp: 5, scale: 1.05 },
+          { dex: 246, name: '애버라스', hp: 42, speed: 78, damage: 11, exp: 5, scale: 1.05 },
+          { dex: 371, name: '아공이', hp: 40, speed: 86, damage: 11, exp: 5, scale: 1.05 }
+        ]},
+        { start: 110, end: 300, spawnInterval: 0.18, spawnBatch: 5, maxEnemies: 260, eliteChance: 0.10, pool: [
+          { dex: 148, name: '신뇽', hp: 180, speed: 112, damage: 22, exp: 9, scale: 1.18 },
+          { dex: 375, name: '메탕구', hp: 220, speed: 104, damage: 24, exp: 10, scale: 1.2 },
+          { dex: 444, name: '한바이트', hp: 200, speed: 118, damage: 24, exp: 10, scale: 1.18 }
+        ]},
+        { start: 300, end: 9999, spawnInterval: 0.10, spawnBatch: 8, maxEnemies: 450, eliteChance: 0.16, pool: [
+          { dex: 149, name: '망나뇽', hp: 680, speed: 130, damage: 38, exp: 18, scale: 1.32 },
+          { dex: 373, name: '보만다', hp: 740, speed: 138, damage: 40, exp: 19, scale: 1.35 },
+          { dex: 376, name: '메타그로스', hp: 860, speed: 122, damage: 44, exp: 20, scale: 1.36 },
+          { dex: 445, name: '한카리아스', hp: 820, speed: 142, damage: 42, exp: 20, scale: 1.36 }
+        ]}
+      ],
+      bosses: [
+        { time: 150, dex: 150, name: '[초전설] 유전자 뮤츠', hp: 12000, speed: 126, damage: 38, scale: 2.4 },
+        { time: 330, dex: 384, name: '[초전설] 천공의 신 레쿠쟈', hp: 48000, speed: 138, damage: 50, scale: 2.55 },
+        { time: 540, dex: 493, name: '[창조신] 아르세우스', hp: 135000, speed: 145, damage: 68, scale: 2.75, isFinal: true }
+      ]
+    }
+  ],
+
   metaUpgrades: [
     { id: 'might', name: '근력 강화 (공격력)', icon: '⚔️', img: './assets/items/charcoal.png', max: 10, baseCost: 50, desc: '레벨당 기본 공격력 +5% 영구 증가' },
     { id: 'hp', name: '체력 강화 (HP)', icon: '❤️', img: './assets/items/full-restore.png', max: 10, baseCost: 45, desc: '레벨당 최대 체력 +8% 영구 증가' },

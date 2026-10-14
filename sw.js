@@ -1,4 +1,4 @@
-const CACHE_NAME = 'poke-survivors-v8';
+const CACHE_NAME = 'poke-survivors-v9';
 const SPRITE_IDS = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 19, 23, 25, 26,
   41, 50, 66, 81, 88, 92, 93, 94, 95, 109, 111, 123,

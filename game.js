@@ -57,8 +57,9 @@ class AssetManager {
   preloadAll() {
     const spriteIds = [
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 19, 23, 25, 26,
-      41, 50, 66, 81, 88, 92, 93, 94, 95, 109, 111, 123,
-      125, 126, 130, 143, 145, 149, 150, 248, 373, 376, 447, 448
+      41, 50, 64, 66, 74, 81, 88, 92, 93, 94, 95, 109, 111, 112, 123,
+      125, 126, 130, 142, 143, 144, 145, 146, 147, 148, 149, 150,
+      212, 229, 246, 248, 371, 373, 375, 376, 383, 384, 444, 445, 447, 448, 493
     ];
     spriteIds.forEach(id => {
       this.getSprite(id);
@@ -90,6 +91,9 @@ class PokeSurvivorsGame {
 
     this.saveData = this.loadSaveData();
     this.selectedStarterId = this.saveData.lastStarter || 'pikachu';
+    this.selectedStageId = this.saveData.selectedStage || 1;
+    this.gameSpeed = 1.0;
+    this.endlessMode = false;
 
     this.state = 'LOBBY';
     this.width = window.innerWidth;
@@ -130,13 +134,15 @@ class PokeSurvivorsGame {
           coins: parsed.coins ?? 120,
           upgrades: parsed.upgrades || {},
           bestTime: parsed.bestTime || 0,
-          lastStarter: parsed.lastStarter || 'pikachu'
+          lastStarter: parsed.lastStarter || 'pikachu',
+          clearedStages: Array.isArray(parsed.clearedStages) ? parsed.clearedStages : [],
+          selectedStage: parsed.selectedStage || 1
         };
       }
     } catch (e) {
       console.warn('Save load failed', e);
     }
-    return { coins: 120, upgrades: {}, bestTime: 0, lastStarter: 'pikachu' };
+    return { coins: 120, upgrades: {}, bestTime: 0, lastStarter: 'pikachu', clearedStages: [], selectedStage: 1 };
   }
 
   saveProgress() {
@@ -277,6 +283,41 @@ class PokeSurvivorsGame {
       this.togglePause();
     });
 
+    const btnSpeed = document.getElementById('btnSpeedHud');
+    if (btnSpeed) {
+      btnSpeed.addEventListener('click', () => {
+        window.sound.playClick();
+        if (this.gameSpeed === 1.0) this.gameSpeed = 1.5;
+        else if (this.gameSpeed === 1.5) this.gameSpeed = 2.0;
+        else this.gameSpeed = 1.0;
+        btnSpeed.textContent = `${this.gameSpeed}x`;
+      });
+    }
+
+    const btnNextStage = document.getElementById('btnNextStage');
+    if (btnNextStage) {
+      btnNextStage.addEventListener('click', () => {
+        window.sound.playClick();
+        document.getElementById('gameOverModal').classList.add('hidden');
+        this.selectedStageId = Math.min(window.GAME_DATA.stages.length, this.selectedStageId + 1);
+        this.saveData.selectedStage = this.selectedStageId;
+        this.saveProgress();
+        this.startNewGame();
+      });
+    }
+
+    const btnEndless = document.getElementById('btnEndlessMode');
+    if (btnEndless) {
+      btnEndless.addEventListener('click', () => {
+        window.sound.playClick();
+        document.getElementById('gameOverModal').classList.add('hidden');
+        this.endlessMode = true;
+        this.state = 'PLAYING';
+        window.sound.startBGM();
+        this.showToast('♾️ 무한 돌파 모드 돌입! 한계까지 살아남으세요!');
+      });
+    }
+
     document.getElementById('btnResumeGame').addEventListener('click', () => {
       window.sound.playClick();
       this.togglePause();
@@ -372,6 +413,51 @@ class PokeSurvivorsGame {
 
   renderLobby() {
     document.getElementById('lobbyCoins').textContent = this.saveData.coins.toLocaleString();
+
+    // Render Stage Progression Selector
+    const stageGrid = document.getElementById('stageGrid');
+    if (stageGrid && window.GAME_DATA.stages) {
+      stageGrid.innerHTML = '';
+      const cleared = new Set(this.saveData.clearedStages || []);
+      const maxUnlocked = Math.min(5, Math.max(1, ...Array.from(cleared), 0) + 1);
+      const progTxt = document.getElementById('stageProgressText');
+      if (progTxt) progTxt.textContent = `클리어: ${cleared.size} / ${window.GAME_DATA.stages.length} 스테이지`;
+
+      for (const stg of window.GAME_DATA.stages) {
+        const isCleared = cleared.has(stg.id);
+        const isUnlocked = stg.id <= maxUnlocked || isCleared;
+        const card = document.createElement('div');
+        card.className = `stage-card ${stg.id === this.selectedStageId ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
+
+        let statusHtml = `<span class="stage-status-pill open">도전 가능</span>`;
+        if (isCleared) statusHtml = `<span class="stage-status-pill cleared">🏆 CLEAR</span>`;
+        else if (!isUnlocked) statusHtml = `<span class="stage-status-pill lock">🔒 STAGE ${stg.id - 1} 필요</span>`;
+
+        card.innerHTML = `
+          ${statusHtml}
+          <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" alt="${stg.name}" />
+          <div class="stage-title">${stg.icon} STAGE ${stg.id}</div>
+          <div style="font-size:0.74rem;color:#cbd5e1">${stg.name.replace(/^STAGE \d+\.\s*/, '')}</div>
+          <div class="stage-meta">🪙 보상 x${stg.coinMult} · +${stg.clearBonus}</div>
+        `;
+
+        card.addEventListener('click', () => {
+          window.sound.playClick();
+          this.selectedStageId = stg.id;
+          this.saveData.selectedStage = stg.id;
+          this.saveProgress();
+          this.renderLobby();
+        });
+        stageGrid.appendChild(card);
+      }
+    }
+
+    const curStage = (window.GAME_DATA.stages || []).find(s => s.id === this.selectedStageId) || window.GAME_DATA.stages[0];
+    const startBtn = document.getElementById('btnStartGame');
+    if (startBtn && curStage) {
+      startBtn.innerHTML = `<span>⚔️ ${curStage.icon} STAGE ${curStage.id} 출격하기</span>`;
+    }
+
     const grid = document.getElementById('starterGrid');
     grid.innerHTML = '';
 
@@ -479,6 +565,8 @@ class PokeSurvivorsGame {
 
   startNewGame() {
     const starter = window.GAME_DATA.starters.find(s => s.id === this.selectedStarterId) || window.GAME_DATA.starters[0];
+    this.currentStage = (window.GAME_DATA.stages || []).find(s => s.id === this.selectedStageId) || window.GAME_DATA.stages[0];
+    this.endlessMode = false;
     document.getElementById('titleScreen').classList.add('hidden');
     document.getElementById('hudScreen').classList.remove('hidden');
     document.getElementById('bossHud').classList.add('hidden');
@@ -487,7 +575,7 @@ class PokeSurvivorsGame {
     const hpMeta = 1 + this.getUpgradeLevel('hp') * 0.08;
     const speedMeta = 1 + this.getUpgradeLevel('speed') * 0.05;
     const magnetMeta = 1 + this.getUpgradeLevel('magnet') * 0.12;
-    const greedMeta = 1 + this.getUpgradeLevel('greed') * 0.08;
+    const greedMeta = (1 + this.getUpgradeLevel('greed') * 0.08) * (this.currentStage ? this.currentStage.coinMult : 1.0);
     const revives = this.getUpgradeLevel('revive');
 
     const maxHp = Math.round(starter.stats.hp * hpMeta);
@@ -557,13 +645,15 @@ class PokeSurvivorsGame {
     this.shockwaves = [];
 
     // Gentle initial spawn (5 weak enemies) so the start is comfortable!
-    const firstWave = window.GAME_DATA.waves[0];
+    const stageWaves = (this.currentStage && this.currentStage.waves) ? this.currentStage.waves : window.GAME_DATA.waves;
+    const firstWave = stageWaves[0];
     for (let i = 0; i < 5; i++) {
       this.spawnEnemy(firstWave.pool[i % firstWave.pool.length], false);
     }
 
     this.state = 'PLAYING';
     this.updateHud();
+    this.showToast(`${this.currentStage.icon} ${this.currentStage.name} 돌입! 최종 보스를 격파하세요!`);
     window.sound.startBGM();
   }
 
@@ -730,6 +820,16 @@ class PokeSurvivorsGame {
     document.getElementById('hudTimer').textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     document.getElementById('hudKills').textContent = this.kills.toLocaleString();
     document.getElementById('hudCoins').textContent = this.runCoins.toLocaleString();
+
+    if (this.currentStage) {
+      const stgBadge = document.getElementById('hudStageBadge');
+      if (stgBadge) stgBadge.textContent = this.endlessMode ? `♾️ 무한모드 (${this.currentStage.name})` : `${this.currentStage.icon} STAGE ${this.currentStage.id}`;
+      const progFill = document.getElementById('stageProgFill');
+      if (progFill) {
+        const stgPct = Math.min(100, (this.elapsedTime / (this.currentStage.duration || 300)) * 100);
+        progFill.style.width = `${stgPct}%`;
+      }
+    }
 
     if (this.activeBoss && this.activeBoss.hp > 0) {
       document.getElementById('bossHud').classList.remove('hidden');
@@ -996,7 +1096,8 @@ class PokeSurvivorsGame {
   }
 
   loop(now) {
-    const dt = Math.min(0.05, (now - this.lastFrameTime) / 1000);
+    const rawDt = Math.min(0.05, (now - this.lastFrameTime) / 1000);
+    const dt = rawDt * (this.gameSpeed || 1.0);
     this.lastFrameTime = now;
 
     if (this.state === 'PLAYING') {
@@ -1194,15 +1295,17 @@ class PokeSurvivorsGame {
   }
 
   updateSpawning(dt) {
-    for (const bossDef of window.GAME_DATA.bosses) {
+    const stageBosses = (this.currentStage && this.currentStage.bosses) ? this.currentStage.bosses : window.GAME_DATA.bosses;
+    for (const bossDef of stageBosses) {
       if (this.elapsedTime >= bossDef.time && !this.spawnedBossTimes.has(bossDef.time)) {
         this.spawnedBossTimes.add(bossDef.time);
         this.spawnBoss(bossDef);
       }
     }
 
-    const wave = window.GAME_DATA.waves.find(w => this.elapsedTime >= w.start && this.elapsedTime < w.end)
-      || window.GAME_DATA.waves[window.GAME_DATA.waves.length - 1];
+    const stageWaves = (this.currentStage && this.currentStage.waves) ? this.currentStage.waves : window.GAME_DATA.waves;
+    const wave = stageWaves.find(w => this.elapsedTime >= w.start && this.elapsedTime < w.end)
+      || stageWaves[stageWaves.length - 1];
 
     // Regular High-Density Spawning
     this.spawnTimer -= dt;
@@ -1262,9 +1365,11 @@ class PokeSurvivorsGame {
     const lateExponent = mins > 2.5 ? Math.pow(mins - 2.5, 2.15) * 0.55 : 0;
     const timeScale = 1 + mins * 0.20 + lateExponent;
     const eliteMult = isElite ? (3.5 + mins * 0.6) : 1.0;
-    const hp = Math.round(template.hp * timeScale * eliteMult);
+    const stgHpMult = this.currentStage ? this.currentStage.hpMult : 1.0;
+    const stgDmgMult = this.currentStage ? this.currentStage.dmgMult : 1.0;
+    const hp = Math.round(template.hp * timeScale * eliteMult * stgHpMult);
     const scale = (template.scale || 1) * (isElite ? 1.35 : 1);
-    const dmgScale = 1 + Math.max(0, mins - 2.0) * 0.25;
+    const dmgScale = (1 + Math.max(0, mins - 2.0) * 0.25) * stgDmgMult;
 
     this.enemies.push({
       dex: template.dex,
@@ -2358,7 +2463,17 @@ class PokeSurvivorsGame {
     window.sound.stopBGM();
     if (victory) window.sound.playEvolve();
 
-    const bonusCoins = Math.round((Math.floor(this.elapsedTime * 0.4) + (victory ? 250 : 0)) * this.player.greedMult);
+    const stg = this.currentStage || window.GAME_DATA.stages[0];
+    let firstClearBonus = 0;
+    if (victory && stg) {
+      if (!Array.isArray(this.saveData.clearedStages)) this.saveData.clearedStages = [];
+      if (!this.saveData.clearedStages.includes(stg.id)) {
+        this.saveData.clearedStages.push(stg.id);
+        firstClearBonus = stg.clearBonus || 200;
+      }
+    }
+
+    const bonusCoins = Math.round((Math.floor(this.elapsedTime * 0.4) + (victory ? (stg.clearBonus || 200) : 0)) * this.player.greedMult) + firstClearBonus;
     this.runCoins += bonusCoins;
     this.saveData.coins += bonusCoins;
     if (this.elapsedTime > (this.saveData.bestTime || 0)) {
@@ -2368,19 +2483,34 @@ class PokeSurvivorsGame {
 
     const badge = document.getElementById('resultBadge');
     const title = document.getElementById('resultTitle');
+    const btnNext = document.getElementById('btnNextStage');
+    const btnEndless = document.getElementById('btnEndlessMode');
+
     if (victory) {
-      badge.textContent = 'CHAMPION VICTORY!';
+      badge.textContent = `STAGE ${stg.id} CLEAR!`;
       badge.className = 'levelup-badge gold';
-      title.textContent = '🎉 초전설 뮤츠를 물리치고 챔피언이 되었습니다!';
+      title.textContent = `🎉 ${stg.name} 정복 완료!`;
+      if (btnNext) {
+        if (stg.id < window.GAME_DATA.stages.length) {
+          btnNext.classList.remove('hidden');
+          btnNext.textContent = `⚔️ 다음 스테이지 (STAGE ${stg.id + 1}) 출격!`;
+        } else {
+          btnNext.classList.add('hidden');
+        }
+      }
+      if (btnEndless) btnEndless.classList.remove('hidden');
     } else {
       badge.textContent = 'BATTLE ENDED';
       badge.className = 'levelup-badge';
       title.textContent = `${this.player.name}(은)는 쓰러졌다...`;
+      if (btnNext) btnNext.classList.add('hidden');
+      if (btnEndless) btnEndless.classList.add('hidden');
     }
 
     const mins = Math.floor(this.elapsedTime / 60);
     const secs = Math.floor(this.elapsedTime % 60);
     document.getElementById('resultSummary').innerHTML = `
+      <div class="stat-line"><span>도전 스테이지</span><strong>${stg.icon} ${stg.name}</strong></div>
       <div class="stat-line"><span>최종 파트너</span><strong>${this.player.name} (Lv.${this.player.level})</strong></div>
       <div class="stat-line"><span>생존 시간</span><strong>${mins}분 ${secs}초</strong></div>
       <div class="stat-line"><span>처치한 야생 포켓몬</span><strong>${this.kills.toLocaleString()}마리</strong></div>
@@ -2460,6 +2590,12 @@ class PokeSurvivorsGame {
           }
         }
       }
+    }
+
+    // Stage Biome Tint Overlay
+    if (this.currentStage && this.currentStage.mapTint && this.currentStage.id > 1) {
+      ctx.fillStyle = this.currentStage.mapTint;
+      ctx.fillRect(0, 0, w, h);
     }
 
     const st = this.getComputedStats();

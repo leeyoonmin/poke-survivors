@@ -50,7 +50,16 @@
 
         <div class="hero-banner">
           <h1 class="game-title">포켓 서바이버즈</h1>
-          <p class="game-subtitle">끝없이 몰려오는 야생 포켓몬 군단 속에서 진화하고 살아남아라!</p>
+          <p class="game-subtitle">스테이지 보스를 격파하고 다음 지역을 정복하라!</p>
+        </div>
+
+        <!-- STAGE SELECTOR DECK -->
+        <div class="stage-select-box">
+          <div class="stage-select-header">
+            <span>🗺️ 출격 스테이지 선택</span>
+            <small id="stageProgressText">진행도: STAGE 1 / 5</small>
+          </div>
+          <div id="stageGrid" class="stage-grid"></div>
         </div>
 
         <div class="section-header">
@@ -86,7 +95,14 @@
         </div>
 
         <div class="hud-center">
+          <div id="hudStageBadge" class="hud-stage-badge">🌲 STAGE 1</div>
           <div id="hudTimer" class="hud-timer">00:00</div>
+          <div class="stage-prog-track">
+            <div id="stageProgFill" class="stage-prog-fill"></div>
+            <span class="stage-boss-mark m1" title="미니보스">💀</span>
+            <span class="stage-boss-mark m2" title="중간보스">👹</span>
+            <span class="stage-boss-mark m3" title="최종보스">👑</span>
+          </div>
           <div class="hud-stats-row">
             <span title="처치한 야생 포켓몬">💀 <b id="hudKills">0</b></span>
             <span title="획득 포켓코인">🪙 <b id="hudCoins">0</b></span>
@@ -94,6 +110,7 @@
         </div>
 
         <div class="hud-right">
+          <button id="btnSpeedHud" class="btn-hud speed-btn" type="button">1x</button>
           <button id="btnMuteHud" class="btn-hud" type="button">🔊</button>
           <button id="btnPauseHud" class="btn-hud" type="button">⏸️</button>
         </div>
@@ -156,6 +173,8 @@
         <h2 id="resultTitle">눈앞이 캄캄해졌다!</h2>
         <div id="resultSummary" class="result-summary"></div>
         <div class="modal-actions">
+          <button id="btnNextStage" class="btn-start hidden" type="button">⚔️ 다음 스테이지 출격!</button>
+          <button id="btnEndlessMode" class="btn-secondary hidden" type="button">♾️ 무한 돌파 모드 계속하기</button>
           <button id="btnRetryGame" class="btn-start" type="button">🔄 다시 도전하기</button>
           <button id="btnBackToLobby" class="btn-secondary large" type="button">🏠 포켓몬 센터(로비)로 이동</button>
         </div>
