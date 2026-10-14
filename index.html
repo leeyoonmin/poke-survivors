@@ -53,31 +53,50 @@
           <p class="game-subtitle">스테이지 보스를 격파하고 다음 지역을 정복하라!</p>
         </div>
 
-        <!-- STAGE SELECTOR DECK -->
-        <div class="stage-select-box">
-          <div class="stage-select-header">
-            <span>🗺️ 출격 스테이지 선택</span>
-            <small id="stageProgressText">진행도: STAGE 1 / 5</small>
+        <!-- STEP 1: STAGE SELECTOR STEP -->
+        <div id="lobbyStepStage" class="lobby-step-wrap">
+          <div class="section-header">
+            <h2>STEP 1. 출격 지역(스테이지) 선택</h2>
+            <div class="sub-buttons">
+              <button id="btnOpenLab" class="btn-secondary" type="button">🧪 오박사 연구소 (영구강화)</button>
+              <button id="btnOpenGuide" class="btn-secondary" type="button">📖 궁극기 진화 조합표</button>
+            </div>
           </div>
-          <div id="stageGrid" class="stage-grid"></div>
+
+          <div class="stage-select-box">
+            <div class="stage-select-header">
+              <span>🗺️ 정복할 스테이지를 선택하세요</span>
+              <small id="stageProgressText">진행도: STAGE 1 / 5</small>
+            </div>
+            <div id="stageGrid" class="stage-grid step-stage-grid"></div>
+          </div>
+
+          <footer class="lobby-footer">
+            <div id="selectedStageSummary" class="partner-summary"></div>
+            <button id="btnGoStep2" class="btn-start" type="button">
+              <span>다음: 파트너 포켓몬 선택 ➔</span>
+            </button>
+          </footer>
         </div>
 
-        <div class="section-header">
-          <h2>파트너 포켓몬 선택</h2>
-          <div class="sub-buttons">
-            <button id="btnOpenLab" class="btn-secondary" type="button">🧪 오박사 연구소 (영구강화)</button>
-            <button id="btnOpenGuide" class="btn-secondary" type="button">📖 궁극기 진화 조합표</button>
+        <!-- STEP 2: PARTNER POKEMON SELECTOR STEP -->
+        <div id="lobbyStepPokemon" class="lobby-step-wrap hidden">
+          <div class="section-header">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <button id="btnBackStep1" class="btn-secondary" type="button">◀ 스테이지 다시 선택</button>
+              <h2 id="step2StageLabel">STEP 2. 파트너 포켓몬 선택</h2>
+            </div>
           </div>
+
+          <div id="starterGrid" class="starter-grid"></div>
+
+          <footer class="lobby-footer">
+            <div id="selectedPartnerSummary" class="partner-summary"></div>
+            <button id="btnStartGame" class="btn-start" type="button">
+              <span>⚔️ 모험 출발하기</span>
+            </button>
+          </footer>
         </div>
-
-        <div id="starterGrid" class="starter-grid"></div>
-
-        <footer class="lobby-footer">
-          <div id="selectedPartnerSummary" class="partner-summary"></div>
-          <button id="btnStartGame" class="btn-start" type="button">
-            <span>⚔️ 모험 출발하기</span>
-          </button>
-        </footer>
       </div>
     </section>
 

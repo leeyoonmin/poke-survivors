@@ -92,6 +92,7 @@ class PokeSurvivorsGame {
     this.saveData = this.loadSaveData();
     this.selectedStarterId = this.saveData.lastStarter || 'pikachu';
     this.selectedStageId = this.saveData.selectedStage || 1;
+    this.lobbyStep = 1; // 1 = Stage Select, 2 = Pokemon Select
     this.gameSpeed = 1.0;
     this.endlessMode = false;
 
@@ -262,6 +263,24 @@ class PokeSurvivorsGame {
       this.startNewGame();
     });
 
+    const btnGoStep2 = document.getElementById('btnGoStep2');
+    if (btnGoStep2) {
+      btnGoStep2.addEventListener('click', () => {
+        window.sound.playClick();
+        this.lobbyStep = 2;
+        this.renderLobby();
+      });
+    }
+
+    const btnBackStep1 = document.getElementById('btnBackStep1');
+    if (btnBackStep1) {
+      btnBackStep1.addEventListener('click', () => {
+        window.sound.playClick();
+        this.lobbyStep = 1;
+        this.renderLobby();
+      });
+    }
+
     const updateMuteButtons = () => {
       const icon = window.sound.muted ? '🔇' : '🔊';
       document.getElementById('btnMuteLobby').textContent = icon;
@@ -414,7 +433,16 @@ class PokeSurvivorsGame {
   renderLobby() {
     document.getElementById('lobbyCoins').textContent = this.saveData.coins.toLocaleString();
 
-    // Render Stage Progression Selector
+    const step1El = document.getElementById('lobbyStepStage');
+    const step2El = document.getElementById('lobbyStepPokemon');
+    if (step1El && step2El) {
+      step1El.classList.toggle('hidden', this.lobbyStep !== 1);
+      step2El.classList.toggle('hidden', this.lobbyStep !== 2);
+    }
+
+    const curStage = (window.GAME_DATA.stages || []).find(s => s.id === this.selectedStageId) || window.GAME_DATA.stages[0];
+
+    // Render Stage Progression Selector (STEP 1)
     const stageGrid = document.getElementById('stageGrid');
     if (stageGrid && window.GAME_DATA.stages) {
       stageGrid.innerHTML = '';
@@ -437,8 +465,8 @@ class PokeSurvivorsGame {
           ${statusHtml}
           <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" alt="${stg.name}" />
           <div class="stage-title">${stg.icon} STAGE ${stg.id}</div>
-          <div style="font-size:0.74rem;color:#cbd5e1">${stg.name.replace(/^STAGE \d+\.\s*/, '')}</div>
-          <div class="stage-meta">🪙 보상 x${stg.coinMult} · +${stg.clearBonus}</div>
+          <div style="font-size:0.82rem;color:#1e293b">${stg.name.replace(/^STAGE \d+\.\s*/, '')}</div>
+          <div class="stage-meta">🪙 코인 x${stg.coinMult} · 첫클리어 +${stg.clearBonus}</div>
         `;
 
         card.addEventListener('click', () => {
@@ -452,7 +480,21 @@ class PokeSurvivorsGame {
       }
     }
 
-    const curStage = (window.GAME_DATA.stages || []).find(s => s.id === this.selectedStageId) || window.GAME_DATA.stages[0];
+    const stageSum = document.getElementById('selectedStageSummary');
+    if (stageSum && curStage) {
+      const finalBoss = curStage.bosses[curStage.bosses.length - 1];
+      stageSum.innerHTML = `
+        <h3>선택된 지역: ${curStage.icon} ${curStage.name}</h3>
+        <p style="color:#fef08a;font-weight:800;margin-bottom:2px">👑 최종 보스: ${finalBoss.name} · 코인 획득 ${curStage.coinMult}배</p>
+        <p>${curStage.sub}</p>
+      `;
+    }
+
+    const step2Label = document.getElementById('step2StageLabel');
+    if (step2Label && curStage) {
+      step2Label.textContent = `STEP 2. 파트너 선택 (${curStage.icon} STAGE ${curStage.id} 출격)`;
+    }
+
     const startBtn = document.getElementById('btnStartGame');
     if (startBtn && curStage) {
       startBtn.innerHTML = `<span>⚔️ ${curStage.icon} STAGE ${curStage.id} 출격하기</span>`;

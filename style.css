@@ -275,12 +275,26 @@ html, body {
   font-size: 0.8rem;
 }
 
-.stage-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(132px, 1fr));
-  gap: 7px;
-  overflow-x: auto;
-  padding-bottom: 3px;
+.lobby-step-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.stage-grid.step-stage-grid {
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 10px;
+}
+
+.stage-grid.step-stage-grid .stage-card {
+  padding: 12px 10px;
+  gap: 5px;
+}
+
+.stage-grid.step-stage-grid .stage-boss-thumb {
+  width: 58px;
+  height: 58px;
 }
 
 .stage-card {
