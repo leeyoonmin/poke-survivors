@@ -42,10 +42,11 @@
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   -webkit-user-select: none;
-  font-family: 'Galmuri11', 'DungGeunMo', monospace, sans-serif;
-  font-smooth: never;
-  -webkit-font-smoothing: none;
-  image-rendering: pixelated;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  font-weight: 800;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
 html, body {
@@ -232,16 +233,17 @@ html, body {
 }
 
 .game-title {
-  font-size: clamp(1.35rem, 4vw, 1.85rem);
-  color: #383838;
-  letter-spacing: 0.04em;
-  text-shadow: 2px 2px 0 #d0d0d8;
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.2rem);
+  color: #111827;
+  letter-spacing: 0.02em;
+  text-shadow: none;
 }
 
 .game-subtitle {
-  color: #d84010;
-  font-size: 0.82rem;
-  font-weight: 700;
+  color: #c2410c;
+  font-size: 0.92rem;
+  font-weight: 900;
   margin-top: 3px;
 }
 
@@ -315,28 +317,29 @@ html, body {
 }
 
 .stage-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #282828;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #111827;
 }
 
 .stage-card div[style] {
-  color: #505050 !important;
-  font-weight: 700;
+  color: #1e293b !important;
+  font-size: 0.82rem !important;
+  font-weight: 800;
 }
 
 .stage-meta {
-  font-size: 0.7rem;
-  color: #d84010;
-  font-weight: 700;
+  font-size: 0.78rem;
+  color: #c2410c;
+  font-weight: 900;
 }
 
 .stage-status-pill {
-  font-size: 0.66rem;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
-  border: 1.5px solid #282828;
+  font-size: 0.74rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1.5px solid #111827;
   color: #fff;
 }
 
@@ -445,46 +448,46 @@ html, body {
 }
 
 .type-pill {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 1px 8px;
-  border-radius: 3px;
-  color: #181818;
-  border: 1.5px solid #181818;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 4px;
+  color: #111827;
+  border: 1.5px solid #111827;
 }
 
 .starter-name {
-  font-size: 0.98rem;
-  font-weight: 700;
+  font-size: 1.08rem;
+  font-weight: 900;
   color: #ffffff;
-  text-shadow: 1.5px 1.5px 0 #183048;
+  text-shadow: 0 1.5px 3px rgba(0,0,0,0.85);
 }
 
 .starter-bonus {
-  font-size: 0.72rem;
-  color: #f8e858;
-  font-weight: 700;
-  text-shadow: 1px 1px 0 #183048;
+  font-size: 0.8rem;
+  color: #fef08a;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.85);
 }
 
 .starter-weapon-tag {
-  font-size: 0.72rem;
-  color: #282828;
+  font-size: 0.78rem;
+  color: #111827;
   background: var(--fr-cream);
-  padding: 2px 7px;
-  border-radius: 3px;
-  border: 1.5px solid #282828;
-  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1.5px solid #111827;
+  font-weight: 900;
 }
 
 /* FireRed Bottom Split Battle Dialog Box ("[포켓몬]은(는) 무엇을 할까?" + Command Box) */
 .lobby-footer {
   margin-top: auto;
-  background: var(--fr-dialog-teal);
-  border: 3.5px solid #282828;
+  background: #1e3a4c;
+  border: 3.5px solid #111827;
   box-shadow: inset 0 0 0 3px var(--fr-dialog-gold), 0 4px 0 #102018;
   border-radius: 6px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -498,29 +501,31 @@ html, body {
 }
 
 .partner-summary h3 {
-  font-size: 0.96rem;
+  font-size: 1.05rem;
+  font-weight: 900;
   color: #ffffff;
-  margin-bottom: 3px;
-  text-shadow: 1.5px 1.5px 0 #102030;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 }
 
 .partner-summary p {
-  font-size: 0.8rem;
-  color: #e8f0f8;
-  line-height: 1.35;
-  text-shadow: 1px 1px 0 #102030;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.42;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.75);
 }
 
 /* FireRed White Command Box Button (▶ 싸운다 style) */
 .btn-start {
   background: var(--fr-cmd-white);
-  color: #282828;
-  border: 3px solid #282828;
+  color: #111827;
+  border: 3px solid #111827;
   box-shadow: inset 0 0 0 3px var(--fr-border-purple), 0 3px 0 #101820;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.08rem;
+  font-weight: 900;
   cursor: pointer;
 }
 
@@ -976,37 +981,39 @@ html, body {
 }
 
 .choice-title-row strong {
-  font-size: 0.92rem;
-  color: #282828;
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: #111827;
 }
 
 .choice-title-row strong::before {
   content: '▶ ';
-  color: #d84010;
+  color: #c2410c;
 }
 
 .choice-tag {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: #1880d8;
-  border: 1.5px solid #282828;
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #0284c7;
+  border: 1.5px solid #111827;
   color: #ffffff;
 }
 
 .choice-tag.new {
-  background: #38a850;
+  background: #16a34a;
 }
 
 .choice-tag.evo {
-  background: #e85018;
+  background: #dc2626;
 }
 
 .choice-desc {
-  font-size: 0.76rem;
-  color: #404040;
-  line-height: 1.35;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.42;
 }
 
 /* LAB & GUIDE GRIDS */
