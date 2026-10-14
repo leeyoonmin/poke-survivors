@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d111a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="포켓서바이버즈" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>포켓 서바이버즈 (Poké Survivors)</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./assets/icons/favicon.png" />
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Floating Virtual Joystick Indicator -->
+    <div id="joystickZone" class="hidden">
+      <div id="joystickBase">
+        <div id="joystickKnob"></div>
+      </div>
+    </div>
+
+    <!-- TITLE / LOBBY SCREEN -->
+    <section id="titleScreen" class="screen active">
+      <div class="title-container">
+        <header class="top-bar">
+          <div class="brand-badge">
+            <img src="./assets/icons/favicon.png" alt="Pokeball" class="mini-ball" />
+            <span>POKÉ SURVIVORS</span>
+          </div>
+          <div class="top-actions">
+            <div class="coin-pill" title="보유 포켓코인">
+              <span>🪙</span>
+              <strong id="lobbyCoins">0</strong>
+            </div>
+            <button id="btnInstallPwa" class="btn-pwa" type="button">📲 앱 설치</button>
+            <button id="btnMuteLobby" class="btn-icon" type="button" aria-label="사운드 토글">🔊</button>
+          </div>
+        </header>
+
+        <div class="hero-banner">
+          <h1 class="game-title">포켓 서바이버즈</h1>
+          <p class="game-subtitle">끝없이 몰려오는 야생 포켓몬 군단 속에서 진화하고 살아남아라!</p>
+        </div>
+
+        <div class="section-header">
+          <h2>파트너 포켓몬 선택</h2>
+          <div class="sub-buttons">
+            <button id="btnOpenLab" class="btn-secondary" type="button">🧪 오박사 연구소 (영구강화)</button>
+            <button id="btnOpenGuide" class="btn-secondary" type="button">📖 궁극기 진화 조합표</button>
+          </div>
+        </div>
+
+        <div id="starterGrid" class="starter-grid"></div>
+
+        <footer class="lobby-footer">
+          <div id="selectedPartnerSummary" class="partner-summary"></div>
+          <button id="btnStartGame" class="btn-start" type="button">
+            <span>⚔️ 모험 출발하기</span>
+          </button>
+        </footer>
+      </div>
+    </section>
+
+    <!-- IN-GAME HUD -->
+    <section id="hudScreen" class="hud hidden">
+      <div class="exp-bar-wrap">
+        <div id="expBarFill" class="exp-bar-fill"></div>
+        <span id="expLevelText" class="exp-level-text">Lv. 1 · 피카츄</span>
+      </div>
+
+      <div class="hud-top-row">
+        <div class="hud-left">
+          <div id="weaponSlots" class="slot-row"></div>
+          <div id="passiveSlots" class="slot-row"></div>
+        </div>
+
+        <div class="hud-center">
+          <div id="hudTimer" class="hud-timer">00:00</div>
+          <div class="hud-stats-row">
+            <span title="처치한 야생 포켓몬">💀 <b id="hudKills">0</b></span>
+            <span title="획득 포켓코인">🪙 <b id="hudCoins">0</b></span>
+          </div>
+        </div>
+
+        <div class="hud-right">
+          <button id="btnMuteHud" class="btn-hud" type="button">🔊</button>
+          <button id="btnPauseHud" class="btn-hud" type="button">⏸️</button>
+        </div>
+      </div>
+
+      <!-- Boss HP Bar -->
+      <div id="bossHud" class="boss-hud hidden">
+        <div class="boss-name-row">
+          <span class="boss-tag">BOSS</span>
+          <strong id="bossNameText">우두머리 롱스톤</strong>
+        </div>
+        <div class="boss-hp-track">
+          <div id="bossHpFill" class="boss-hp-fill"></div>
+        </div>
+      </div>
+
+      <!-- Evolution / Boss Toast Banner -->
+      <div id="toastBanner" class="toast-banner hidden"></div>
+    </section>
+
+    <!-- LEVEL UP MODAL -->
+    <div id="levelUpModal" class="modal-backdrop hidden">
+      <div class="modal-card levelup-card">
+        <div class="modal-header">
+          <span class="levelup-badge">LEVEL UP!</span>
+          <h2 id="levelUpTitle">새로운 기술 또는 도구를 선택하세요</h2>
+        </div>
+        <div id="upgradeChoices" class="choices-list"></div>
+      </div>
+    </div>
+
+    <!-- TREASURE CHEST MODAL -->
+    <div id="chestModal" class="modal-backdrop hidden">
+      <div class="modal-card chest-card">
+        <div class="modal-header">
+          <span class="levelup-badge gold">SUPER CAPSULE!</span>
+          <h2>보스 전리품 캡슐 오픈!</h2>
+        </div>
+        <div id="chestRewardContent" class="chest-rewards"></div>
+        <button id="btnCloseChest" class="btn-start" type="button">확인 (전투 계속)</button>
+      </div>
+    </div>
+
+    <!-- PAUSE MODAL -->
+    <div id="pauseModal" class="modal-backdrop hidden">
+      <div class="modal-card pause-card">
+        <h2>일시정지</h2>
+        <div id="pauseStatsBox" class="pause-stats"></div>
+        <div class="modal-actions">
+          <button id="btnResumeGame" class="btn-start" type="button">▶️ 계속하기</button>
+          <button id="btnGiveUpGame" class="btn-danger" type="button">🏳️ 모험 종료 (로비로)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER / VICTORY MODAL -->
+    <div id="gameOverModal" class="modal-backdrop hidden">
+      <div class="modal-card gameover-card">
+        <span id="resultBadge" class="levelup-badge">MORAL DEFEAT</span>
+        <h2 id="resultTitle">눈앞이 캄캄해졌다!</h2>
+        <div id="resultSummary" class="result-summary"></div>
+        <div class="modal-actions">
+          <button id="btnRetryGame" class="btn-start" type="button">🔄 다시 도전하기</button>
+          <button id="btnBackToLobby" class="btn-secondary large" type="button">🏠 포켓몬 센터(로비)로 이동</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAB (META UPGRADES) MODAL -->
+    <div id="labModal" class="modal-backdrop hidden">
+      <div class="modal-card wide-card">
+        <div class="modal-header-row">
+          <div>
+            <h2>🧪 오박사 연구소 (영구 능력치 강화)</h2>
+            <p class="muted-text">전투에서 모은 포켓코인으로 모든 파트너의 기본 능력치를 영구 강화합니다.</p>
+          </div>
+          <div class="coin-pill">🪙 <strong id="labCoins">0</strong></div>
+        </div>
+        <div id="labGrid" class="lab-grid"></div>
+        <div class="modal-actions row-end">
+          <button id="btnResetLab" class="btn-danger small" type="button">초기화 (100% 환불)</button>
+          <button id="btnCloseLab" class="btn-start small" type="button">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVOLUTION GUIDE MODAL -->
+    <div id="guideModal" class="modal-backdrop hidden">
+      <div class="modal-card wide-card">
+        <div class="modal-header-row">
+          <div>
+            <h2>📖 기술 궁극기 진화 & 포켓몬 진화 도감</h2>
+            <p class="muted-text">기본 기술 <b>Lv.8 달성</b> + <b>짝꿍 도구(패시브) 보유</b> 시 레벨업/보스 상자에서 궁극기로 진화합니다!</p>
+          </div>
+        </div>
+        <div id="guideContent" class="guide-grid"></div>
+        <div class="modal-actions row-end">
+          <button id="btnCloseGuide" class="btn-start small" type="button">닫기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PWA INSTALL GUIDE MODAL -->
+    <div id="pwaModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h2>📲 모바일 앱(PWA)으로 설치하기</h2>
+        <div class="pwa-instructions">
+          <div class="pwa-step">
+            <strong>🍎 iPhone / iPad (Safari 브라우저)</strong>
+            <p>1. 브라우저 하단(또는 상단)의 <b>공유 버튼 [📤]</b>을 누르세요.</p>
+            <p>2. 메뉴를 내려 <b>[홈 화면에 추가 (Add to Home Screen)]</b>를 선택하면 전체화면 네이티브 앱처럼 설치됩니다!</p>
+          </div>
+          <div class="pwa-step">
+            <strong>🤖 Android (Chrome / 삼성 인터넷)</strong>
+            <p>브라우저 우측 상단 메뉴 <b>[⋮]</b> → <b>[앱 설치]</b> 또는 <b>[홈 화면에 추가]</b>를 누르면 즉시 설치됩니다.</p>
+          </div>
+        </div>
+        <button id="btnClosePwa" class="btn-start small" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./audio.js"></script>
+  <script src="./game.js"></script>
+</body>
+</html>
