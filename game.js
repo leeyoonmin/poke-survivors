@@ -890,7 +890,9 @@ class PokeSurvivorsGame {
     const hpMeta = (1 + this.getUpgradeLevel('hp') * 0.08) * (1 + eggLvl * 0.02);
     const speedMeta = 1 + this.getUpgradeLevel('speed') * 0.04;
     const magnetMeta = 1 + this.getUpgradeLevel('magnet') * 0.12;
-    const greedMeta = (1 + this.getUpgradeLevel('greed') * 0.06) * (this.currentStage ? this.currentStage.coinMult : 1.0);
+    const greedBonus = 1 + this.getUpgradeLevel('greed') * 0.06;
+    const expLabBonus = 1 + this.getUpgradeLevel('greed') * 0.04;
+    const greedMeta = greedBonus * (this.currentStage ? this.currentStage.coinMult : 1.0);
     const cooldownMeta = Math.pow(0.97, this.getUpgradeLevel('cooldown'));
     const armorMeta = this.getUpgradeLevel('armor') * 1.5;
     const regenMeta = this.getUpgradeLevel('armor') * 0.5;
@@ -918,7 +920,7 @@ class PokeSurvivorsGame {
       baseRegen: starter.stats.regen + regenMeta,
       baseMagnet: starter.stats.magnet * magnetMeta,
       baseCooldown: starter.stats.cooldown * cooldownMeta,
-      baseExpMult: starter.stats.expMult * greedMeta,
+      baseExpMult: starter.stats.expMult * expLabBonus,
       greedMult: greedMeta,
       revivesLeft: revives,
       rerollsLeft: rerolls,
@@ -1200,7 +1202,8 @@ class PokeSurvivorsGame {
     if (this.player.exp >= this.player.nextExp) {
       this.player.exp -= this.player.nextExp;
       this.player.level++;
-      this.player.nextExp = Math.floor(10 + this.player.level * 8 + Math.pow(this.player.level, 1.4));
+      const lv = this.player.level;
+      this.player.nextExp = Math.floor(14 + lv * 18 + Math.pow(lv, 1.92) * 2.6);
       this.checkPokemonEvolution();
       this.triggerLevelUpModal();
     }
