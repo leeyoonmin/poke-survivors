@@ -1,9 +1,17 @@
-const CACHE_NAME = 'poke-survivors-v1';
+const CACHE_NAME = 'poke-survivors-v2';
 const SPRITE_IDS = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 19, 23, 25, 26,
   41, 50, 66, 81, 88, 92, 93, 94, 95, 109, 111, 123,
   125, 126, 130, 143, 145, 149, 150, 248, 373, 376, 447, 448
 ];
+const ART_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 25, 26, 92, 93, 94, 95, 130, 143, 145, 150, 447, 448];
+const ITEM_NAMES = [
+  'poke-ball', 'great-ball', 'ultra-ball', 'master-ball', 'rare-candy',
+  'potion', 'super-potion', 'hyper-potion', 'full-restore', 'magnet',
+  'charcoal', 'mystic-water', 'miracle-seed', 'spell-tag', 'expert-belt',
+  'choice-scarf', 'lucky-egg', 'amulet-coin', 'revive', 'max-revive'
+];
+const ENV_NAMES = ['grass_1', 'grass_2', 'path_1', 'bush', 'rock', 'flowers'];
 
 const CORE_ASSETS = [
   './',
@@ -17,7 +25,10 @@ const CORE_ASSETS = [
   './assets/icons/icon-512.png',
   './assets/icons/apple-touch-icon.png',
   './assets/icons/favicon.png',
-  ...SPRITE_IDS.map((id) => `./assets/sprites/${id}.png`)
+  ...SPRITE_IDS.map((id) => `./assets/sprites/${id}.png`),
+  ...ART_IDS.map((id) => `./assets/art/${id}.png`),
+  ...ITEM_NAMES.map((n) => `./assets/items/${n}.png`),
+  ...ENV_NAMES.map((n) => `./assets/env/${n}.png`)
 ];
 
 self.addEventListener('install', (event) => {

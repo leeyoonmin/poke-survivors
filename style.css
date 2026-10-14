@@ -1,8 +1,8 @@
 :root {
-  --bg-dark: #0b0f19;
-  --bg-panel: rgba(19, 27, 46, 0.92);
-  --bg-card: rgba(30, 41, 68, 0.88);
-  --border-light: rgba(255, 255, 255, 0.14);
+  --bg-dark: #090d16;
+  --bg-panel: rgba(16, 23, 41, 0.94);
+  --bg-card: rgba(26, 36, 62, 0.9);
+  --border-light: rgba(255, 255, 255, 0.16);
   --accent-red: #ef4444;
   --accent-yellow: #facc15;
   --accent-blue: #38bdf8;
@@ -64,25 +64,26 @@ html, body {
 
 #joystickBase {
   position: absolute;
-  width: 112px;
-  height: 112px;
-  margin-left: -56px;
-  margin-top: -56px;
+  width: 116px;
+  height: 116px;
+  margin-left: -58px;
+  margin-top: -58px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 70%);
-  border: 2px solid rgba(255, 255, 255, 0.28);
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 70%);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 0 24px rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 #joystickKnob {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #facc15, #eab308);
-  box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
-  border: 2px solid #fff;
+  background: radial-gradient(circle at 35% 35%, #ef4444 0%, #dc2626 48%, #f8fafc 52%, #e2e8f0 100%);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+  border: 2.5px solid #fff;
 }
 
 /* TITLE SCREEN */
@@ -93,14 +94,15 @@ html, body {
   overflow-y: auto;
   touch-action: pan-y;
   background:
-    radial-gradient(circle at 20% 15%, rgba(239, 68, 68, 0.22), transparent 45%),
-    radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.2), transparent 50%),
-    linear-gradient(180deg, #0b0f19 0%, #111827 100%);
+    radial-gradient(circle at 18% 15%, rgba(239, 68, 68, 0.25), transparent 42%),
+    radial-gradient(circle at 82% 20%, rgba(250, 204, 21, 0.18), transparent 40%),
+    radial-gradient(circle at 75% 82%, rgba(56, 189, 248, 0.22), transparent 48%),
+    linear-gradient(180deg, #090d16 0%, #111827 100%);
   padding: calc(var(--safe-top) + 14px) calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 20px) calc(var(--safe-left) + 16px);
 }
 
 .title-container {
-  max-width: 960px;
+  max-width: 980px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -120,15 +122,15 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.06em;
   color: var(--accent-yellow);
-  font-size: 0.95rem;
+  font-size: 0.96rem;
 }
 
 .mini-ball {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   image-rendering: pixelated;
 }
 
@@ -139,10 +141,10 @@ html, body {
 }
 
 .coin-pill {
-  background: rgba(250, 204, 21, 0.14);
-  border: 1px solid rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.16);
+  border: 1px solid rgba(250, 204, 21, 0.5);
   color: #fde047;
-  padding: 6px 12px;
+  padding: 6px 13px;
   border-radius: 999px;
   font-size: 0.92rem;
   display: flex;
@@ -153,21 +155,21 @@ html, body {
 .btn-pwa {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: #fff;
-  border: none;
-  padding: 7px 13px;
+  border: 1px solid rgba(147, 197, 253, 0.5);
+  padding: 7px 14px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45);
 }
 
 .btn-icon {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   color: #fff;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   font-size: 1.05rem;
   cursor: pointer;
@@ -179,12 +181,12 @@ html, body {
 }
 
 .game-title {
-  font-size: clamp(1.8rem, 5vw, 2.7rem);
+  font-size: clamp(1.9rem, 5vw, 2.8rem);
   font-weight: 900;
-  background: linear-gradient(180deg, #ffffff 0%, #fde047 55%, #f97316 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fde047 52%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 14px rgba(249, 115, 22, 0.35));
+  filter: drop-shadow(0 4px 16px rgba(249, 115, 22, 0.4));
 }
 
 .game-subtitle {
@@ -213,10 +215,10 @@ html, body {
 }
 
 .btn-secondary {
-  background: rgba(51, 65, 85, 0.75);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(51, 65, 85, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.4);
   color: #f1f5f9;
-  padding: 8px 13px;
+  padding: 8px 14px;
   border-radius: 10px;
   font-size: 0.84rem;
   font-weight: 700;
@@ -230,14 +232,14 @@ html, body {
 
 .starter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(152px, 1fr));
   gap: 10px;
 }
 
 .starter-card {
   background: var(--bg-card);
   border: 2px solid var(--border-light);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 12px 10px;
   display: flex;
   flex-direction: column;
@@ -247,12 +249,13 @@ html, body {
   cursor: pointer;
   transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
   position: relative;
+  overflow: hidden;
 }
 
 .starter-card.selected {
   border-color: var(--accent-yellow);
-  background: linear-gradient(180deg, rgba(250, 204, 21, 0.16), rgba(30, 41, 68, 0.95));
-  box-shadow: 0 0 20px rgba(250, 204, 21, 0.28);
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.2), rgba(26, 36, 62, 0.96));
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.32);
   transform: translateY(-2px);
 }
 
@@ -260,15 +263,20 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  height: 68px;
+  gap: 4px;
+  height: 76px;
 }
 
-.starter-sprite {
-  width: 64px;
-  height: 64px;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+.starter-art {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.65));
+  transition: transform 0.2s;
+}
+
+.starter-card:hover .starter-art {
+  transform: scale(1.08);
 }
 
 .evo-mini-sprites {
@@ -278,37 +286,39 @@ html, body {
 }
 
 .evo-mini-sprites img {
-  width: 28px;
-  height: 28px;
-  image-rendering: pixelated;
-  opacity: 0.78;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .type-pill {
   font-size: 0.72rem;
-  font-weight: 800;
-  padding: 2px 8px;
+  font-weight: 900;
+  padding: 2px 9px;
   border-radius: 999px;
   color: #0f172a;
 }
 
 .starter-name {
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   font-weight: 800;
 }
 
 .starter-bonus {
   font-size: 0.75rem;
   color: #fde047;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .starter-weapon-tag {
   font-size: 0.75rem;
   color: #cbd5e1;
-  background: rgba(15, 23, 42, 0.65);
-  padding: 3px 8px;
+  background: rgba(15, 23, 42, 0.72);
+  padding: 4px 9px;
   border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .lobby-footer {
@@ -394,11 +404,11 @@ html, body {
   position: relative;
   width: 100%;
   height: 22px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.88);
+  border: 2px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.6);
 }
 
 .exp-bar-fill {
@@ -438,27 +448,34 @@ html, body {
 }
 
 .slot-box {
-  width: 30px;
-  height: 30px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 7px;
+  width: 32px;
+  height: 32px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 1rem;
   position: relative;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+}
+
+.slot-box img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
 }
 
 .slot-box.evolved {
   border-color: #facc15;
-  box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.7);
 }
 
 .slot-lvl {
   position: absolute;
   bottom: -2px;
-  right: 1px;
+  right: 2px;
   font-size: 0.62rem;
   font-weight: 900;
   color: #fde047;
@@ -467,10 +484,10 @@ html, body {
 
 .hud-center {
   text-align: center;
-  background: rgba(15, 23, 42, 0.72);
-  padding: 4px 12px;
+  background: rgba(15, 23, 42, 0.78);
+  padding: 4px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.18);
 }
 
 .hud-timer {
@@ -499,7 +516,7 @@ html, body {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.82);
+  background: rgba(15, 23, 42, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.28);
   color: #fff;
   font-size: 1.05rem;
@@ -509,7 +526,7 @@ html, body {
 .boss-hud {
   align-self: center;
   width: min(460px, 92%);
-  background: rgba(15, 23, 42, 0.88);
+  background: rgba(15, 23, 42, 0.9);
   border: 1.5px solid #ef4444;
   border-radius: 10px;
   padding: 6px 10px;
@@ -551,7 +568,7 @@ html, body {
 .toast-banner {
   align-self: center;
   margin-top: 8px;
-  background: linear-gradient(90deg, rgba(234,179,8,0.95), rgba(249,115,22,0.95));
+  background: linear-gradient(90deg, rgba(234,179,8,0.96), rgba(249,115,22,0.96));
   color: #0f172a;
   font-weight: 900;
   font-size: 0.92rem;
@@ -585,7 +602,7 @@ html, body {
   max-height: 90dvh;
   overflow-y: auto;
   background: var(--bg-panel);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.22);
   border-radius: 18px;
   padding: 18px;
   display: flex;
@@ -665,15 +682,22 @@ html, body {
 }
 
 .choice-icon {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255,255,255,0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.65rem;
   flex-shrink: 0;
+}
+
+.choice-icon img {
+  width: 34px;
+  height: 34px;
+  image-rendering: pixelated;
 }
 
 .choice-body {
