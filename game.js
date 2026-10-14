@@ -3,9 +3,23 @@
 class AssetManager {
   constructor() {
     this.sprites = new Map();
+    this.anims = new Map();
+    this.animMeta = {};
     this.arts = new Map();
     this.items = new Map();
     this.env = new Map();
+    fetch('./assets/anim/meta.json')
+      .then(r => r.json())
+      .then(d => { this.animMeta = d; })
+      .catch(() => {});
+  }
+
+  getAnim(dex) {
+    if (this.anims.has(dex)) return this.anims.get(dex);
+    const img = new Image();
+    img.src = `./assets/anim/${dex}.png`;
+    this.anims.set(dex, img);
+    return img;
   }
 
   getSprite(dex) {
@@ -46,7 +60,10 @@ class AssetManager {
       41, 50, 66, 81, 88, 92, 93, 94, 95, 109, 111, 123,
       125, 126, 130, 143, 145, 149, 150, 248, 373, 376, 447, 448
     ];
-    spriteIds.forEach(id => this.getSprite(id));
+    spriteIds.forEach(id => {
+      this.getSprite(id);
+      this.getAnim(id);
+    });
 
     const artIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 25, 26, 92, 93, 94, 447, 448];
     artIds.forEach(id => this.getArt(id));
@@ -2267,19 +2284,28 @@ class PokeSurvivorsGame {
       }
 
       const img = this.assets.getSprite(e.dex);
+      const animImg = this.assets.getAnim(e.dex);
+      const meta = this.assets.animMeta[String(e.dex)];
       const drawSize = 54 * e.scale;
-      const squash = Math.sin(e.animPhase) * 0.06;
+      const squash = Math.sin(e.animPhase) * 0.08;
+      const hopY = Math.abs(Math.sin(e.animPhase * 0.85)) * 4.5;
+      const tilt = Math.sin(e.animPhase * 0.85) * 0.11;
 
       ctx.save();
-      ctx.translate(ex, ey);
-      if (e.x > p.x) ctx.scale(-1, 1);
+      ctx.translate(ex, ey - hopY);
+      if (e.x < p.x) ctx.scale(-1, 1);
+      ctx.rotate(tilt);
       ctx.scale(1 + squash, 1 - squash);
       if (e.flashTimer > 0) {
         ctx.filter = 'brightness(3) contrast(2)';
       } else if (e.slowTimer > 0) {
         ctx.filter = 'hue-rotate(90deg)';
       }
-      if (img && img.complete && img.naturalWidth > 0) {
+      if (animImg && animImg.complete && animImg.naturalWidth > 0 && meta && meta.frames > 0) {
+        const frameIdx = Math.floor(e.animPhase * 1.1) % meta.frames;
+        const fw = meta.size;
+        ctx.drawImage(animImg, frameIdx * fw, 0, fw, fw, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+      } else if (img && img.complete && img.naturalWidth > 0) {
         ctx.drawImage(img, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
       }
       ctx.restore();
@@ -2300,7 +2326,7 @@ class PokeSurvivorsGame {
     // 8. Player Character
     const px = w / 2;
     const py = h / 2;
-    const bounce = Math.sin(p.walkAnim) * 3.5;
+    const bounce = Math.abs(Math.sin(p.walkAnim)) * -4.5;
 
     ctx.fillStyle = 'rgba(0,0,0,0.48)';
     ctx.beginPath();
@@ -2309,13 +2335,19 @@ class PokeSurvivorsGame {
 
     ctx.save();
     ctx.translate(px, py + bounce);
-    if (p.facing < 0) ctx.scale(-1, 1);
+    if (p.facing > 0) ctx.scale(-1, 1);
     if (p.invulnTimer > 0 && Math.floor(p.invulnTimer * 16) % 2 === 0) {
       ctx.globalAlpha = 0.55;
     }
     const pImg = this.assets.getSprite(p.dex);
-    const pSize = 70;
-    if (pImg && pImg.complete && pImg.naturalWidth > 0) {
+    const pAnim = this.assets.getAnim(p.dex);
+    const pMeta = this.assets.animMeta[String(p.dex)];
+    const pSize = 72;
+    if (pAnim && pAnim.complete && pAnim.naturalWidth > 0 && pMeta && pMeta.frames > 0) {
+      const fIdx = Math.floor(this.elapsedTime * 10) % pMeta.frames;
+      const fw = pMeta.size;
+      ctx.drawImage(pAnim, fIdx * fw, 0, fw, fw, -pSize / 2, -pSize / 2, pSize, pSize);
+    } else if (pImg && pImg.complete && pImg.naturalWidth > 0) {
       ctx.drawImage(pImg, -pSize / 2, -pSize / 2, pSize, pSize);
     }
     ctx.restore();
