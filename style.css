@@ -357,7 +357,9 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  overflow-y: auto;
+  padding: 8px 12px !important;
 }
 
 .carousel-dots {

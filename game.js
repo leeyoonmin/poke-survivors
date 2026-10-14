@@ -634,10 +634,14 @@ class PokeSurvivorsGame {
             ${statusHtml}
             <span class="stage-meta">🪙 코인 x${stg.coinMult} · 첫클리어 +${stg.clearBonus}</span>
           </div>
-          <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" style="width:82px;height:82px" alt="${stg.name}" />
-          <div class="stage-title" style="font-size:1.18rem">${stg.icon} ${stg.name}</div>
-          <div style="font-size:0.86rem;font-weight:800;color:#334155;line-height:1.35">${stg.sub}</div>
-          <div style="display:flex;gap:8px;justify-content:center;align-items:center;width:100%;margin-top:4px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px;width:100%">
+            <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" style="width:68px;height:68px" alt="${stg.name}" />
+            <div style="text-align:left">
+              <div class="stage-title" style="font-size:1.12rem">${stg.icon} ${stg.name}</div>
+              <div style="font-size:0.82rem;font-weight:800;color:#334155;line-height:1.3;margin-top:2px">${stg.sub}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;align-items:center;width:100%">
             ${bossIconsHtml}
           </div>
         `;
@@ -695,19 +699,19 @@ class PokeSurvivorsGame {
         card.innerHTML = `
           <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
             <span class="type-pill" style="background:${st.typeColor}">${st.type} 타입</span>
+            <span class="starter-name" style="font-size:1.15rem">${st.name}</span>
             <span class="starter-bonus">${st.bonusText}</span>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0">
-            <img class="starter-art" src="./assets/art/${st.dex}.png" style="width:88px;height:88px" alt="${st.name}" />
-            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">${evoImgs}</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+            <img class="starter-art" src="./assets/art/${st.dex}.png" style="width:72px;height:72px" alt="${st.name}" />
+            <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-start">${evoImgs}</div>
           </div>
-          <div class="starter-name" style="font-size:1.25rem">${st.name}</div>
-          <div style="background:rgba(17,24,39,0.55);border:1.5px solid #93c5fd;border-radius:5px;padding:6px 10px;width:100%;text-align:left;font-size:0.8rem;line-height:1.35">
-            <div style="color:#fde047;font-weight:900;margin-bottom:2px">✨ 고유 특성 [${st.traitName}]</div>
-            <div style="color:#ffffff;font-weight:700">${st.traitDesc}</div>
+          <div style="background:rgba(17,24,39,0.62);border:1.5px solid #93c5fd;border-radius:5px;padding:5px 9px;width:100%;text-align:left;font-size:0.78rem;line-height:1.3">
+            <span style="color:#fde047;font-weight:900">✨ 특성 [${st.traitName}]:</span>
+            <span style="color:#ffffff;font-weight:700"> ${st.traitDesc}</span>
           </div>
-          <div class="starter-weapon-tag" style="width:100%;text-align:center;font-size:0.82rem">
-            ${startW.icon} 전용 시작 기술: [${startW.name}] (${startW.desc})
+          <div class="starter-weapon-tag" style="width:100%;text-align:center;font-size:0.78rem;padding:4px 8px">
+            ${startW.icon} 전용 시작 기술: [${startW.name}] — ${startW.desc}
           </div>
         `;
 
