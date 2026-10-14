@@ -1602,8 +1602,10 @@ class PokeSurvivorsGame {
 
             curX = target.x;
             curY = target.y;
+            this.checkCrateHit(curX, curY, 55);
           }
         }
+        this.checkCrateHit(p.x, p.y, 120);
         if (w.id === 'volttackle') this.screenShake = Math.max(this.screenShake, 0.14);
       }
 
@@ -2126,7 +2128,7 @@ class PokeSurvivorsGame {
         else if (roll < 0.54) dropType = 'magnet';
         else if (roll < 0.72) dropType = 'bomb';
 
-        this.pickups.push({ type: dropType, x: pk.x, y: pk.y });
+        this.pickups.push({ type: dropType, x: pk.x, y: pk.y, magnetized: true });
       }
     }
   }
@@ -2407,8 +2409,15 @@ class PokeSurvivorsGame {
 
     for (let i = this.pickups.length - 1; i >= 0; i--) {
       const pk = this.pickups[i];
-      if (pk.type === 'crate') continue;
       const d = Math.hypot(p.x - pk.x, p.y - pk.y);
+
+      // Pokéball / Great Ball / Ultra Ball field capsules open automatically when player walks near!
+      if (pk.type === 'crate') {
+        if (d <= 48) {
+          this.checkCrateHit(pk.x, pk.y, 24);
+        }
+        continue;
+      }
 
       // Gold coins & field drops also get pulled in by player's magnet radius!
       if (pk.type !== 'chest' && d <= st.magnet) {

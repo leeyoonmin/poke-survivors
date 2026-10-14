@@ -1090,4 +1090,24 @@ html, body {
   .btn-start {
     width: 100%;
   }
+  .slot-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+  .slot-box img {
+    width: 18px;
+    height: 18px;
+  }
+  .stage-prog-track {
+    width: 104px;
+    height: 9px;
+  }
+  .btn-hud {
+    width: 32px;
+    height: 32px;
+    font-size: 0.88rem;
+    border-radius: 9px;
+  }
 }
