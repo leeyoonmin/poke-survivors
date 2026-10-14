@@ -281,6 +281,44 @@ class PokeSurvivorsGame {
       });
     }
 
+    // Carousel Prev/Next Buttons
+    const btnStagePrev = document.getElementById('btnStagePrev');
+    const btnStageNext = document.getElementById('btnStageNext');
+    if (btnStagePrev) {
+      btnStagePrev.addEventListener('click', () => this.stepStageCarousel(-1));
+    }
+    if (btnStageNext) {
+      btnStageNext.addEventListener('click', () => this.stepStageCarousel(1));
+    }
+
+    const btnPokePrev = document.getElementById('btnPokePrev');
+    const btnPokeNext = document.getElementById('btnPokeNext');
+    if (btnPokePrev) {
+      btnPokePrev.addEventListener('click', () => this.stepPokeCarousel(-1));
+    }
+    if (btnPokeNext) {
+      btnPokeNext.addEventListener('click', () => this.stepPokeCarousel(1));
+    }
+
+    // Sync selection when user swipes horizontally on carousel track
+    const stageTrack = document.getElementById('stageGrid');
+    if (stageTrack) {
+      let stTimer = null;
+      stageTrack.addEventListener('scroll', () => {
+        clearTimeout(stTimer);
+        stTimer = setTimeout(() => this.onCarouselScroll(stageTrack, 'stage'), 90);
+      }, { passive: true });
+    }
+
+    const pokeTrack = document.getElementById('starterGrid');
+    if (pokeTrack) {
+      let pkTimer = null;
+      pokeTrack.addEventListener('scroll', () => {
+        clearTimeout(pkTimer);
+        pkTimer = setTimeout(() => this.onCarouselScroll(pokeTrack, 'poke'), 90);
+      }, { passive: true });
+    }
+
     const updateMuteButtons = () => {
       const icon = window.sound.muted ? '🔇' : '🔊';
       document.getElementById('btnMuteLobby').textContent = icon;
@@ -430,6 +468,128 @@ class PokeSurvivorsGame {
     });
   }
 
+  stepStageCarousel(dir) {
+    const stages = window.GAME_DATA.stages || [];
+    if (!stages.length) return;
+    let idx = stages.findIndex(s => s.id === this.selectedStageId);
+    idx = (idx + dir + stages.length) % stages.length;
+    window.sound.playClick();
+    this.selectedStageId = stages[idx].id;
+    this.saveData.selectedStage = this.selectedStageId;
+    this.saveProgress();
+    this.updateLobbySummaries();
+    this.scrollToActiveCard('stageGrid', idx);
+  }
+
+  stepPokeCarousel(dir) {
+    const starters = window.GAME_DATA.starters || [];
+    if (!starters.length) return;
+    let idx = starters.findIndex(s => s.id === this.selectedStarterId);
+    idx = (idx + dir + starters.length) % starters.length;
+    window.sound.playClick();
+    this.selectedStarterId = starters[idx].id;
+    this.saveData.lastStarter = this.selectedStarterId;
+    this.saveProgress();
+    this.updateLobbySummaries();
+    this.scrollToActiveCard('starterGrid', idx);
+  }
+
+  scrollToActiveCard(trackId, index, instant = false) {
+    const track = document.getElementById(trackId);
+    if (!track || !track.children[index]) return;
+    const card = track.children[index];
+    const targetLeft = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+    track.scrollTo({ left: targetLeft, behavior: instant ? 'auto' : 'smooth' });
+  }
+
+  onCarouselScroll(track, kind) {
+    const center = track.scrollLeft + track.clientWidth / 2;
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    Array.from(track.children).forEach((child, idx) => {
+      const cCenter = child.offsetLeft + child.clientWidth / 2;
+      const d = Math.abs(cCenter - center);
+      if (d < bestDist) {
+        bestDist = d;
+        bestIdx = idx;
+      }
+    });
+
+    if (kind === 'stage') {
+      const stg = (window.GAME_DATA.stages || [])[bestIdx];
+      if (stg && stg.id !== this.selectedStageId) {
+        this.selectedStageId = stg.id;
+        this.saveData.selectedStage = stg.id;
+        this.saveProgress();
+        this.updateLobbySummaries();
+      }
+    } else {
+      const st = (window.GAME_DATA.starters || [])[bestIdx];
+      if (st && st.id !== this.selectedStarterId) {
+        this.selectedStarterId = st.id;
+        this.saveData.lastStarter = st.id;
+        this.saveProgress();
+        this.updateLobbySummaries();
+      }
+    }
+  }
+
+  updateLobbySummaries() {
+    const stages = window.GAME_DATA.stages || [];
+    const starters = window.GAME_DATA.starters || [];
+    const curStage = stages.find(s => s.id === this.selectedStageId) || stages[0];
+    const sel = starters.find(s => s.id === this.selectedStarterId) || starters[0];
+    const stgIdx = Math.max(0, stages.findIndex(s => s.id === this.selectedStageId));
+    const pkIdx = Math.max(0, starters.findIndex(s => s.id === this.selectedStarterId));
+
+    const stageTrack = document.getElementById('stageGrid');
+    if (stageTrack) {
+      Array.from(stageTrack.children).forEach((el, i) => el.classList.toggle('selected', i === stgIdx));
+    }
+    const stageDots = document.getElementById('stageDots');
+    if (stageDots) {
+      Array.from(stageDots.children).forEach((el, i) => el.classList.toggle('active', i === stgIdx));
+    }
+
+    const pokeTrack = document.getElementById('starterGrid');
+    if (pokeTrack) {
+      Array.from(pokeTrack.children).forEach((el, i) => el.classList.toggle('selected', i === pkIdx));
+    }
+    const pokeDots = document.getElementById('pokeDots');
+    if (pokeDots) {
+      Array.from(pokeDots.children).forEach((el, i) => el.classList.toggle('active', i === pkIdx));
+    }
+
+    const pokeIdxBadge = document.getElementById('pokeIndexBadge');
+    if (pokeIdxBadge) pokeIdxBadge.textContent = `${pkIdx + 1} / ${starters.length}`;
+
+    const stageSum = document.getElementById('selectedStageSummary');
+    if (stageSum && curStage) {
+      const finalBoss = curStage.bosses[curStage.bosses.length - 1];
+      stageSum.innerHTML = `
+        <h3>${curStage.icon} ${curStage.name} <small style="color:#fef08a">(보스: ${finalBoss.name} · 코인 x${curStage.coinMult})</small></h3>
+      `;
+    }
+
+    const step2Label = document.getElementById('step2StageLabel');
+    if (step2Label && curStage) {
+      step2Label.textContent = `STEP 2. 파트너 선택 (${curStage.icon} STAGE ${curStage.id})`;
+    }
+
+    const startBtn = document.getElementById('btnStartGame');
+    if (startBtn && curStage) {
+      startBtn.innerHTML = `<span>⚔️ ${curStage.icon} STAGE ${curStage.id} 출격하기</span>`;
+    }
+
+    const startW = window.GAME_DATA.weapons[sel.startWeapon];
+    const partnerSum = document.getElementById('selectedPartnerSummary');
+    if (partnerSum) {
+      partnerSum.innerHTML = `
+        <h3>파트너: ${sel.name} <small style="color:#fef08a">(${startW.icon}${startW.name} · 특성: ${sel.traitName})</small></h3>
+      `;
+    }
+  }
+
   renderLobby() {
     document.getElementById('lobbyCoins').textContent = this.saveData.coins.toLocaleString();
 
@@ -440,33 +600,46 @@ class PokeSurvivorsGame {
       step2El.classList.toggle('hidden', this.lobbyStep !== 2);
     }
 
-    const curStage = (window.GAME_DATA.stages || []).find(s => s.id === this.selectedStageId) || window.GAME_DATA.stages[0];
+    const stages = window.GAME_DATA.stages || [];
+    const starters = window.GAME_DATA.starters || [];
 
-    // Render Stage Progression Selector (STEP 1)
+    // 1. Render Stage Carousel Slides & Dots
     const stageGrid = document.getElementById('stageGrid');
-    if (stageGrid && window.GAME_DATA.stages) {
+    const stageDots = document.getElementById('stageDots');
+    if (stageGrid && stages.length) {
       stageGrid.innerHTML = '';
+      if (stageDots) stageDots.innerHTML = '';
       const cleared = new Set(this.saveData.clearedStages || []);
       const maxUnlocked = Math.min(5, Math.max(1, ...Array.from(cleared), 0) + 1);
-      const progTxt = document.getElementById('stageProgressText');
-      if (progTxt) progTxt.textContent = `클리어: ${cleared.size} / ${window.GAME_DATA.stages.length} 스테이지`;
 
-      for (const stg of window.GAME_DATA.stages) {
+      stages.forEach((stg, idx) => {
         const isCleared = cleared.has(stg.id);
         const isUnlocked = stg.id <= maxUnlocked || isCleared;
         const card = document.createElement('div');
-        card.className = `stage-card ${stg.id === this.selectedStageId ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
+        card.className = `stage-card carousel-slide-card ${stg.id === this.selectedStageId ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
 
-        let statusHtml = `<span class="stage-status-pill open">도전 가능</span>`;
-        if (isCleared) statusHtml = `<span class="stage-status-pill cleared">🏆 CLEAR</span>`;
-        else if (!isUnlocked) statusHtml = `<span class="stage-status-pill lock">🔒 STAGE ${stg.id - 1} 필요</span>`;
+        let statusHtml = `<span class="stage-status-pill open">🔥 도전 가능</span>`;
+        if (isCleared) statusHtml = `<span class="stage-status-pill cleared">🏆 CLEAR 완료</span>`;
+        else if (!isUnlocked) statusHtml = `<span class="stage-status-pill lock">🔒 STAGE ${stg.id - 1} 클리어 필요</span>`;
+
+        const bossIconsHtml = (stg.bosses || []).map(b => `
+          <div style="display:flex;flex-direction:column;align-items:center;background:#fff;border:1.5px solid #504020;border-radius:5px;padding:3px 8px">
+            <img src="./assets/sprites/${b.dex}.png" style="width:32px;height:32px;object-fit:contain" alt="${b.name}" />
+            <span style="font-size:0.72rem;font-weight:900;color:#111827">${b.name}</span>
+          </div>
+        `).join('');
 
         card.innerHTML = `
-          ${statusHtml}
-          <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" alt="${stg.name}" />
-          <div class="stage-title">${stg.icon} STAGE ${stg.id}</div>
-          <div style="font-size:0.82rem;color:#1e293b">${stg.name.replace(/^STAGE \d+\.\s*/, '')}</div>
-          <div class="stage-meta">🪙 코인 x${stg.coinMult} · 첫클리어 +${stg.clearBonus}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+            ${statusHtml}
+            <span class="stage-meta">🪙 코인 x${stg.coinMult} · 첫클리어 +${stg.clearBonus}</span>
+          </div>
+          <img class="stage-boss-thumb" src="./assets/sprites/${stg.bossImg}.png" style="width:82px;height:82px" alt="${stg.name}" />
+          <div class="stage-title" style="font-size:1.18rem">${stg.icon} ${stg.name}</div>
+          <div style="font-size:0.86rem;font-weight:800;color:#334155;line-height:1.35">${stg.sub}</div>
+          <div style="display:flex;gap:8px;justify-content:center;align-items:center;width:100%;margin-top:4px">
+            ${bossIconsHtml}
+          </div>
         `;
 
         card.addEventListener('click', () => {
@@ -474,73 +647,108 @@ class PokeSurvivorsGame {
           this.selectedStageId = stg.id;
           this.saveData.selectedStage = stg.id;
           this.saveProgress();
-          this.renderLobby();
+          this.updateLobbySummaries();
+          this.scrollToActiveCard('stageGrid', idx);
         });
         stageGrid.appendChild(card);
-      }
-    }
 
-    const stageSum = document.getElementById('selectedStageSummary');
-    if (stageSum && curStage) {
-      const finalBoss = curStage.bosses[curStage.bosses.length - 1];
-      stageSum.innerHTML = `
-        <h3>선택된 지역: ${curStage.icon} ${curStage.name}</h3>
-        <p style="color:#fef08a;font-weight:800;margin-bottom:2px">👑 최종 보스: ${finalBoss.name} · 코인 획득 ${curStage.coinMult}배</p>
-        <p>${curStage.sub}</p>
-      `;
-    }
-
-    const step2Label = document.getElementById('step2StageLabel');
-    if (step2Label && curStage) {
-      step2Label.textContent = `STEP 2. 파트너 선택 (${curStage.icon} STAGE ${curStage.id} 출격)`;
-    }
-
-    const startBtn = document.getElementById('btnStartGame');
-    if (startBtn && curStage) {
-      startBtn.innerHTML = `<span>⚔️ ${curStage.icon} STAGE ${curStage.id} 출격하기</span>`;
-    }
-
-    const grid = document.getElementById('starterGrid');
-    grid.innerHTML = '';
-
-    for (const st of window.GAME_DATA.starters) {
-      const card = document.createElement('div');
-      card.className = `starter-card ${st.id === this.selectedStarterId ? 'selected' : ''}`;
-      const startW = window.GAME_DATA.weapons[st.startWeapon];
-
-      const evoImgs = st.evolutions
-        .map(ev => `<img src="./assets/art/${ev.dex}.png" alt="${ev.name}" title="Lv.${ev.level} ${ev.name} 진화" />`)
-        .join('');
-
-      card.innerHTML = `
-        <span class="type-pill" style="background:${st.typeColor}">${st.type}</span>
-        <div class="starter-sprite-row">
-          <img class="starter-art" src="./assets/art/${st.dex}.png" alt="${st.name}" />
-          <div class="evo-mini-sprites">${evoImgs}</div>
-        </div>
-        <div class="starter-name">${st.name}</div>
-        <div class="starter-bonus">${st.bonusText}</div>
-        <div class="starter-weapon-tag">${startW.icon} 시작: ${startW.name}</div>
-      `;
-
-      card.addEventListener('click', () => {
-        window.sound.playClick();
-        this.selectedStarterId = st.id;
-        this.saveData.lastStarter = st.id;
-        this.saveProgress();
-        this.renderLobby();
+        if (stageDots) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = `carousel-dot ${stg.id === this.selectedStageId ? 'active' : ''}`;
+          dot.textContent = `${stg.id}`;
+          dot.addEventListener('click', () => {
+            window.sound.playClick();
+            this.selectedStageId = stg.id;
+            this.saveData.selectedStage = stg.id;
+            this.saveProgress();
+            this.updateLobbySummaries();
+            this.scrollToActiveCard('stageGrid', idx);
+          });
+          stageDots.appendChild(dot);
+        }
       });
-
-      grid.appendChild(card);
     }
 
-    const sel = window.GAME_DATA.starters.find(s => s.id === this.selectedStarterId) || window.GAME_DATA.starters[0];
-    const evoChainText = [sel.name, ...sel.evolutions.map(e => `Lv.${e.level} ${e.name}`)].join(' ➔ ');
-    document.getElementById('selectedPartnerSummary').innerHTML = `
-      <h3>파트너: ${sel.name} <small style="color:#cbd5e1;font-weight:600">(${evoChainText})</small></h3>
-      <p style="color:#fde047;font-weight:800;margin-bottom:3px">✨ 고유 특성 [${sel.traitName}]: ${sel.traitDesc}</p>
-      <p>${sel.desc}</p>
-    `;
+    // 2. Render Starter Pokemon Carousel Slides & Dots
+    const grid = document.getElementById('starterGrid');
+    const pokeDots = document.getElementById('pokeDots');
+    if (grid && starters.length) {
+      grid.innerHTML = '';
+      if (pokeDots) pokeDots.innerHTML = '';
+
+      starters.forEach((st, idx) => {
+        const card = document.createElement('div');
+        card.className = `starter-card carousel-slide-card ${st.id === this.selectedStarterId ? 'selected' : ''}`;
+        const startW = window.GAME_DATA.weapons[st.startWeapon];
+
+        const evoImgs = st.evolutions
+          .map(ev => `
+            <div style="display:flex;align-items:center;gap:3px">
+              <span style="font-size:0.75rem;color:#fef08a;font-weight:900">➔ Lv.${ev.level}</span>
+              <img src="./assets/art/${ev.dex}.png" style="width:36px;height:36px;object-fit:contain" alt="${ev.name}" />
+              <span style="font-size:0.78rem;font-weight:900">${ev.name}</span>
+            </div>
+          `)
+          .join('');
+
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+            <span class="type-pill" style="background:${st.typeColor}">${st.type} 타입</span>
+            <span class="starter-bonus">${st.bonusText}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0">
+            <img class="starter-art" src="./assets/art/${st.dex}.png" style="width:88px;height:88px" alt="${st.name}" />
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">${evoImgs}</div>
+          </div>
+          <div class="starter-name" style="font-size:1.25rem">${st.name}</div>
+          <div style="background:rgba(17,24,39,0.55);border:1.5px solid #93c5fd;border-radius:5px;padding:6px 10px;width:100%;text-align:left;font-size:0.8rem;line-height:1.35">
+            <div style="color:#fde047;font-weight:900;margin-bottom:2px">✨ 고유 특성 [${st.traitName}]</div>
+            <div style="color:#ffffff;font-weight:700">${st.traitDesc}</div>
+          </div>
+          <div class="starter-weapon-tag" style="width:100%;text-align:center;font-size:0.82rem">
+            ${startW.icon} 전용 시작 기술: [${startW.name}] (${startW.desc})
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          window.sound.playClick();
+          this.selectedStarterId = st.id;
+          this.saveData.lastStarter = st.id;
+          this.saveProgress();
+          this.updateLobbySummaries();
+          this.scrollToActiveCard('starterGrid', idx);
+        });
+        grid.appendChild(card);
+
+        if (pokeDots) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = `carousel-dot ${st.id === this.selectedStarterId ? 'active' : ''}`;
+          dot.innerHTML = `<img src="./assets/sprites/${st.dex}.png" alt="${st.name}" />`;
+          dot.addEventListener('click', () => {
+            window.sound.playClick();
+            this.selectedStarterId = st.id;
+            this.saveData.lastStarter = st.id;
+            this.saveProgress();
+            this.updateLobbySummaries();
+            this.scrollToActiveCard('starterGrid', idx);
+          });
+          pokeDots.appendChild(dot);
+        }
+      });
+    }
+
+    this.updateLobbySummaries();
+    requestAnimationFrame(() => {
+      if (this.lobbyStep === 1) {
+        const stgIdx = Math.max(0, stages.findIndex(s => s.id === this.selectedStageId));
+        this.scrollToActiveCard('stageGrid', stgIdx, true);
+      } else {
+        const pkIdx = Math.max(0, starters.findIndex(s => s.id === this.selectedStarterId));
+        this.scrollToActiveCard('starterGrid', pkIdx, true);
+      }
+    });
   }
 
   renderLabModal() {

@@ -53,26 +53,25 @@
           <p class="game-subtitle">스테이지 보스를 격파하고 다음 지역을 정복하라!</p>
         </div>
 
-        <!-- STEP 1: STAGE SELECTOR STEP -->
+        <!-- STEP 1: STAGE CAROUSEL SLIDER STEP -->
         <div id="lobbyStepStage" class="lobby-step-wrap">
           <div class="section-header">
-            <h2>STEP 1. 출격 지역(스테이지) 선택</h2>
+            <h2>STEP 1. 출격 스테이지 선택 (좌우 스와이프)</h2>
             <div class="sub-buttons">
-              <button id="btnOpenLab" class="btn-secondary" type="button">🧪 오박사 연구소 (영구강화)</button>
-              <button id="btnOpenGuide" class="btn-secondary" type="button">📖 궁극기 진화 조합표</button>
+              <button id="btnOpenLab" class="btn-secondary" type="button">🧪 오박사 연구소</button>
+              <button id="btnOpenGuide" class="btn-secondary" type="button">📖 진화 조합표</button>
             </div>
           </div>
 
-          <div class="stage-select-box">
-            <div class="stage-select-header">
-              <span>🗺️ 정복할 스테이지를 선택하세요</span>
-              <small id="stageProgressText">진행도: STAGE 1 / 5</small>
-            </div>
-            <div id="stageGrid" class="stage-grid step-stage-grid"></div>
+          <div class="carousel-shell">
+            <button id="btnStagePrev" class="carousel-arrow prev" type="button" aria-label="이전 스테이지">◀</button>
+            <div id="stageGrid" class="carousel-track"></div>
+            <button id="btnStageNext" class="carousel-arrow next" type="button" aria-label="다음 스테이지">▶</button>
           </div>
+          <div id="stageDots" class="carousel-dots"></div>
 
           <footer class="lobby-footer sticky-bottom-bar">
-            <div id="selectedStageSummary" class="partner-summary"></div>
+            <div id="selectedStageSummary" class="partner-summary compact-summary"></div>
             <div class="footer-btn-row">
               <button id="btnGoStep2" class="btn-start" type="button">
                 <span>다음: 캐릭터 선택 ➔</span>
@@ -81,18 +80,22 @@
           </footer>
         </div>
 
-        <!-- STEP 2: PARTNER POKEMON SELECTOR STEP -->
+        <!-- STEP 2: PARTNER POKEMON CAROUSEL SLIDER STEP -->
         <div id="lobbyStepPokemon" class="lobby-step-wrap hidden">
           <div class="section-header">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <h2 id="step2StageLabel">STEP 2. 파트너 포켓몬 선택</h2>
-            </div>
+            <h2 id="step2StageLabel">STEP 2. 파트너 포켓몬 선택 (좌우 스와이프)</h2>
+            <span id="pokeIndexBadge" class="step-count-pill">1 / 6</span>
           </div>
 
-          <div id="starterGrid" class="starter-grid"></div>
+          <div class="carousel-shell">
+            <button id="btnPokePrev" class="carousel-arrow prev" type="button" aria-label="이전 포켓몬">◀</button>
+            <div id="starterGrid" class="carousel-track"></div>
+            <button id="btnPokeNext" class="carousel-arrow next" type="button" aria-label="다음 포켓몬">▶</button>
+          </div>
+          <div id="pokeDots" class="carousel-dots"></div>
 
           <footer class="lobby-footer sticky-bottom-bar">
-            <div id="selectedPartnerSummary" class="partner-summary"></div>
+            <div id="selectedPartnerSummary" class="partner-summary compact-summary"></div>
             <div class="footer-btn-row two-btns">
               <button id="btnBackStep1" class="btn-back-stage" type="button">
                 <span>◀ 스테이지 선택</span>
