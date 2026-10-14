@@ -344,46 +344,45 @@ window.GAME_DATA = {
     }
   },
 
-  // Difficulty & Swarm Density Significantly Increased!
+  // Balanced Difficulty Curve: Smooth Early Game -> Intense Exponential Late Game!
   waves: [
-    { start: 0, end: 60, spawnInterval: 0.26, spawnBatch: 3, maxEnemies: 165, eliteChance: 0.035, pool: [
-      { dex: 19, name: '꼬렛', hp: 25, speed: 86, damage: 9, exp: 2, scale: 1.0 },
-      { dex: 10, name: '캐터피', hp: 19, speed: 70, damage: 7, exp: 2, scale: 0.95 },
-      { dex: 16, name: '구구', hp: 27, speed: 96, damage: 9, exp: 3, scale: 1.0 },
-      { dex: 41, name: '주뱃', hp: 30, speed: 105, damage: 10, exp: 3, scale: 1.0 }
+    { start: 0, end: 60, spawnInterval: 0.58, spawnBatch: 1, maxEnemies: 55, eliteChance: 0.0, pool: [
+      { dex: 19, name: '꼬렛', hp: 13, speed: 62, damage: 5, exp: 3, scale: 1.0 },
+      { dex: 10, name: '캐터피', hp: 11, speed: 52, damage: 4, exp: 3, scale: 0.95 },
+      { dex: 16, name: '구구', hp: 14, speed: 68, damage: 5, exp: 3, scale: 1.0 }
     ]},
-    { start: 60, end: 150, spawnInterval: 0.21, spawnBatch: 4, maxEnemies: 240, eliteChance: 0.055, pool: [
-      { dex: 41, name: '주뱃', hp: 46, speed: 110, damage: 12, exp: 3, scale: 1.0 },
-      { dex: 50, name: '디그다', hp: 54, speed: 98, damage: 13, exp: 4, scale: 1.0 },
-      { dex: 23, name: '아보', hp: 65, speed: 94, damage: 14, exp: 4, scale: 1.05 },
-      { dex: 66, name: '알통몬', hp: 78, speed: 92, damage: 15, exp: 5, scale: 1.08 }
+    { start: 60, end: 150, spawnInterval: 0.36, spawnBatch: 2, maxEnemies: 115, eliteChance: 0.025, pool: [
+      { dex: 41, name: '주뱃', hp: 32, speed: 84, damage: 9, exp: 4, scale: 1.0 },
+      { dex: 50, name: '디그다', hp: 38, speed: 78, damage: 10, exp: 4, scale: 1.0 },
+      { dex: 23, name: '아보', hp: 46, speed: 76, damage: 11, exp: 5, scale: 1.05 },
+      { dex: 66, name: '알통몬', hp: 56, speed: 74, damage: 12, exp: 5, scale: 1.08 }
     ]},
-    { start: 150, end: 270, spawnInterval: 0.17, spawnBatch: 5, maxEnemies: 310, eliteChance: 0.07, pool: [
-      { dex: 66, name: '알통몬', hp: 110, speed: 100, damage: 17, exp: 6, scale: 1.1 },
-      { dex: 81, name: '코일', hp: 100, speed: 108, damage: 17, exp: 6, scale: 1.05 },
-      { dex: 88, name: '질퍽이', hp: 140, speed: 88, damage: 19, exp: 7, scale: 1.15 },
-      { dex: 109, name: '또가스', hp: 120, speed: 102, damage: 18, exp: 7, scale: 1.1 }
+    { start: 150, end: 270, spawnInterval: 0.22, spawnBatch: 4, maxEnemies: 240, eliteChance: 0.06, pool: [
+      { dex: 66, name: '알통몬', hp: 135, speed: 96, damage: 17, exp: 7, scale: 1.1 },
+      { dex: 81, name: '코일', hp: 125, speed: 104, damage: 17, exp: 7, scale: 1.05 },
+      { dex: 88, name: '질퍽이', hp: 175, speed: 88, damage: 20, exp: 8, scale: 1.15 },
+      { dex: 109, name: '또가스', hp: 150, speed: 100, damage: 19, exp: 8, scale: 1.1 }
     ]},
-    { start: 270, end: 420, spawnInterval: 0.14, spawnBatch: 6, maxEnemies: 370, eliteChance: 0.085, pool: [
-      { dex: 123, name: '스라크', hp: 195, speed: 128, damage: 23, exp: 10, scale: 1.2 },
-      { dex: 125, name: '에레브', hp: 220, speed: 112, damage: 25, exp: 11, scale: 1.2 },
-      { dex: 126, name: '마그마', hp: 230, speed: 110, damage: 25, exp: 11, scale: 1.2 },
-      { dex: 111, name: '뿔카노', hp: 280, speed: 98, damage: 28, exp: 12, scale: 1.25 }
+    { start: 270, end: 420, spawnInterval: 0.14, spawnBatch: 6, maxEnemies: 360, eliteChance: 0.10, pool: [
+      { dex: 123, name: '스라크', hp: 420, speed: 128, damage: 28, exp: 12, scale: 1.2 },
+      { dex: 125, name: '에레브', hp: 480, speed: 116, damage: 30, exp: 13, scale: 1.2 },
+      { dex: 126, name: '마그마', hp: 500, speed: 114, damage: 30, exp: 13, scale: 1.2 },
+      { dex: 111, name: '뿔카노', hp: 620, speed: 104, damage: 34, exp: 15, scale: 1.25 }
     ]},
-    { start: 420, end: 9999, spawnInterval: 0.11, spawnBatch: 7, maxEnemies: 430, eliteChance: 0.11, pool: [
-      { dex: 149, name: '망나뇽', hp: 450, speed: 122, damage: 32, exp: 18, scale: 1.35 },
-      { dex: 248, name: '마기라스', hp: 550, speed: 110, damage: 36, exp: 20, scale: 1.4 },
-      { dex: 373, name: '보만다', hp: 490, speed: 135, damage: 34, exp: 20, scale: 1.38 },
-      { dex: 376, name: '메타그로스', hp: 620, speed: 115, damage: 38, exp: 22, scale: 1.4 }
+    { start: 420, end: 9999, spawnInterval: 0.10, spawnBatch: 8, maxEnemies: 460, eliteChance: 0.15, pool: [
+      { dex: 149, name: '망나뇽', hp: 1150, speed: 132, damage: 42, exp: 22, scale: 1.35 },
+      { dex: 248, name: '마기라스', hp: 1450, speed: 120, damage: 48, exp: 24, scale: 1.4 },
+      { dex: 373, name: '보만다', hp: 1280, speed: 142, damage: 45, exp: 24, scale: 1.38 },
+      { dex: 376, name: '메타그로스', hp: 1680, speed: 125, damage: 52, exp: 26, scale: 1.4 }
     ]}
   ],
 
   bosses: [
-    { time: 60, dex: 95, name: '우두머리 롱스톤', hp: 1600, speed: 96, damage: 24, scale: 2.2 },
-    { time: 150, dex: 143, name: '광폭화 잠만보', hp: 3800, speed: 90, damage: 30, scale: 2.35 },
-    { time: 240, dex: 130, name: '폭주하는 갸라도스', hp: 7600, speed: 114, damage: 36, scale: 2.4 },
-    { time: 360, dex: 145, name: '전설의 뇌신 썬더', hp: 13500, speed: 126, damage: 42, scale: 2.45 },
-    { time: 480, dex: 150, name: '초전설 뮤츠', hp: 25000, speed: 135, damage: 50, scale: 2.6, isFinal: true }
+    { time: 60, dex: 95, name: '우두머리 롱스톤', hp: 900, speed: 84, damage: 18, scale: 2.2 },
+    { time: 150, dex: 143, name: '광폭화 잠만보', hp: 3800, speed: 92, damage: 28, scale: 2.35 },
+    { time: 240, dex: 130, name: '폭주하는 갸라도스', hp: 13500, speed: 116, damage: 38, scale: 2.4 },
+    { time: 360, dex: 145, name: '전설의 뇌신 썬더', hp: 32000, speed: 130, damage: 48, scale: 2.45 },
+    { time: 480, dex: 150, name: '초전설 뮤츠', hp: 72000, speed: 142, damage: 62, scale: 2.6, isFinal: true }
   ],
 
   metaUpgrades: [

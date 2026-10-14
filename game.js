@@ -530,7 +530,7 @@ class PokeSurvivorsGame {
     this.kills = 0;
     this.runCoins = 0;
     this.spawnTimer = 0;
-    this.swarmTimer = 38; // Swarm event every ~42 seconds!
+    this.swarmTimer = 75; // First swarm starts at 1m 15s after player builds up skills!
     this.crateTimer = 4;
     this.spawnedBossTimes = new Set();
     this.activeBoss = null;
@@ -550,9 +550,9 @@ class PokeSurvivorsGame {
     this.floatingTexts = [];
     this.shockwaves = [];
 
-    // Initial swarm burst so the game feels action-packed immediately!
+    // Gentle initial spawn (5 weak enemies) so the start is comfortable!
     const firstWave = window.GAME_DATA.waves[0];
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 5; i++) {
       this.spawnEnemy(firstWave.pool[i % firstWave.pool.length], false);
     }
 
@@ -1220,10 +1220,14 @@ class PokeSurvivorsGame {
     const rx = this.width * 0.48 + (Math.random() - 0.5) * 40;
     const ry = this.height * 0.48 + (Math.random() - 0.5) * 40;
 
-    const timeScale = 1 + (this.elapsedTime / 60) * 0.28;
-    const eliteMult = isElite ? 4.2 : 1.0;
+    const mins = this.elapsedTime / 60;
+    // Gentle early scaling, steep exponential late-game scaling after 2.5 minutes!
+    const lateExponent = mins > 2.5 ? Math.pow(mins - 2.5, 2.15) * 0.55 : 0;
+    const timeScale = 1 + mins * 0.20 + lateExponent;
+    const eliteMult = isElite ? (3.5 + mins * 0.6) : 1.0;
     const hp = Math.round(template.hp * timeScale * eliteMult);
     const scale = (template.scale || 1) * (isElite ? 1.35 : 1);
+    const dmgScale = 1 + Math.max(0, mins - 2.0) * 0.25;
 
     this.enemies.push({
       dex: template.dex,
@@ -1232,8 +1236,8 @@ class PokeSurvivorsGame {
       y: customY !== null ? customY : this.player.y + Math.sin(angle) * ry,
       hp,
       maxHp: hp,
-      speed: template.speed * (isElite ? 1.12 : 1),
-      damage: Math.round(template.damage * (isElite ? 1.35 : 1)),
+      speed: template.speed * (isElite ? 1.12 : 1) * (1 + Math.max(0, mins - 3) * 0.04),
+      damage: Math.round(template.damage * (isElite ? 1.35 : 1) * dmgScale),
       exp: template.exp * (isElite ? 5 : 1),
       scale,
       radius: 18 * scale,
