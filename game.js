@@ -2604,13 +2604,42 @@ class PokeSurvivorsGame {
 }
 
 if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => {
-      console.warn('SW registration skipped:', err);
-    });
+    navigator.serviceWorker
+      .register('./sw.js', { updateViaCache: 'none' })
+      .then((reg) => {
+        reg.update();
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update();
+        });
+      })
+      .catch((err) => {
+        console.warn('SW registration skipped:', err);
+      });
   });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   window.game = new PokeSurvivorsGame();
+  const btnUpdate = document.getElementById('btnForceUpdate');
+  if (btnUpdate) {
+    btnUpdate.addEventListener('click', async () => {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+      window.location.reload();
+    });
+  }
 });
