@@ -152,11 +152,12 @@ class PokeSurvivorsGame {
   }
 
   resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.canvas.width = Math.floor(this.width * this.dpr);
-    this.canvas.height = Math.floor(this.height * this.dpr);
-    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    this.zoom = window.innerWidth < 700 ? 0.62 : 0.74;
+    this.width = Math.floor(window.innerWidth / this.zoom);
+    this.height = Math.floor(window.innerHeight / this.zoom);
+    this.canvas.width = Math.floor(window.innerWidth * this.dpr);
+    this.canvas.height = Math.floor(window.innerHeight * this.dpr);
+    this.ctx.setTransform(this.dpr * this.zoom, 0, 0, this.dpr * this.zoom, 0, 0);
     this.ctx.imageSmoothingEnabled = false;
   }
 
@@ -1240,7 +1241,7 @@ class PokeSurvivorsGame {
       damage: Math.round(template.damage * (isElite ? 1.35 : 1) * dmgScale),
       exp: template.exp * (isElite ? 5 : 1),
       scale,
-      radius: 18 * scale,
+      radius: 14 * scale,
       flashTimer: 0,
       slowTimer: 0,
       isElite,
@@ -2290,7 +2291,7 @@ class PokeSurvivorsGame {
       const img = this.assets.getSprite(e.dex);
       const animImg = this.assets.getAnim(e.dex);
       const meta = this.assets.animMeta[String(e.dex)];
-      const drawSize = 54 * e.scale;
+      const drawSize = 44 * e.scale;
       const squash = Math.sin(e.animPhase) * 0.08;
       const hopY = Math.abs(Math.sin(e.animPhase * 0.85)) * 4.5;
       const tilt = Math.sin(e.animPhase * 0.85) * 0.11;
@@ -2346,7 +2347,7 @@ class PokeSurvivorsGame {
     const pImg = this.assets.getSprite(p.dex);
     const pAnim = this.assets.getAnim(p.dex);
     const pMeta = this.assets.animMeta[String(p.dex)];
-    const pSize = 72;
+    const pSize = 54;
     if (pAnim && pAnim.complete && pAnim.naturalWidth > 0 && pMeta && pMeta.frames > 0) {
       const fIdx = Math.floor(this.elapsedTime * 10) % pMeta.frames;
       const fw = pMeta.size;
