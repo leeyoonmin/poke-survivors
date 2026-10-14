@@ -1952,6 +1952,17 @@ class PokeSurvivorsGame {
       const pk = this.pickups[i];
       if (pk.type === 'crate') continue;
       const d = Math.hypot(p.x - pk.x, p.y - pk.y);
+
+      // Gold coins & field drops also get pulled in by player's magnet radius!
+      if (pk.type !== 'chest' && d <= st.magnet) {
+        pk.magnetized = true;
+      }
+      if (pk.magnetized) {
+        const pullSpeed = 480;
+        pk.x += ((p.x - pk.x) / (d || 1)) * pullSpeed * dt;
+        pk.y += ((p.y - pk.y) / (d || 1)) * pullSpeed * dt;
+      }
+
       if (d < 28) {
         this.pickups.splice(i, 1);
         if (pk.type === 'potion') {
@@ -1961,7 +1972,10 @@ class PokeSurvivorsGame {
         } else if (pk.type === 'magnet') {
           window.sound.playHeal();
           for (const g of this.gems) g.magnetized = true;
-          this.showToast('🧲 레어코일 자석 발동! 맵 전체 이상한사탕 흡수!');
+          for (const item of this.pickups) {
+            if (item.type === 'coin') item.magnetized = true;
+          }
+          this.showToast('🧲 레어코일 자석 발동! 맵 전체 이상한사탕 & 코인 흡수!');
         } else if (pk.type === 'bomb') {
           window.sound.playBossAlert();
           this.screenShake = 0.45;
