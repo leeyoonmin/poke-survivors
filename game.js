@@ -720,6 +720,10 @@ class PokeSurvivorsGame {
           `)
           .join('');
 
+        const cleanTrait = String(st.traitName || '').replace(/\s*\(.*?\)/g, '');
+        const cleanWeapon = String(startW.name || '').replace(/\s*\[.*?\]/g, '');
+        const cleanWDesc = String(startW.desc || '').replace(/^\[.*?\]\s*/, '');
+
         card.innerHTML = `
           <div class="pc-header">
             <div class="pc-title-group">
@@ -739,12 +743,12 @@ class PokeSurvivorsGame {
           </div>
           <div class="pc-specs-footer">
             <div class="pc-spec-row">
-              <span class="pc-spec-tag trait">✨ 특성 · ${st.traitName}</span>
+              <span class="pc-spec-tag trait">✨ 특성 · ${cleanTrait}</span>
               <span class="pc-spec-text">${st.traitDesc}</span>
             </div>
             <div class="pc-spec-row">
-              <span class="pc-spec-tag weapon">${startW.icon} 전용기 · ${startW.name}</span>
-              <span class="pc-spec-text">${startW.desc}</span>
+              <span class="pc-spec-tag weapon">${startW.icon} 전용기 · ${cleanWeapon}</span>
+              <span class="pc-spec-text">${cleanWDesc}</span>
             </div>
           </div>
         `;
