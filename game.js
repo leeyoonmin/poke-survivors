@@ -565,9 +565,8 @@ class PokeSurvivorsGame {
 
     const stageSum = document.getElementById('selectedStageSummary');
     if (stageSum && curStage) {
-      const finalBoss = curStage.bosses[curStage.bosses.length - 1];
       stageSum.innerHTML = `
-        <h3>${curStage.icon} ${curStage.name} <small style="color:#fef08a">(보스: ${finalBoss.name} · 코인 x${curStage.coinMult})</small></h3>
+        <h3 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${curStage.icon} ${curStage.name} <small style="color:#fef08a">(코인 x${curStage.coinMult}배)</small></h3>
       `;
     }
 
@@ -578,14 +577,16 @@ class PokeSurvivorsGame {
 
     const startBtn = document.getElementById('btnStartGame');
     if (startBtn && curStage) {
-      startBtn.innerHTML = `<span>⚔️ ${curStage.icon} STAGE ${curStage.id} 출격하기</span>`;
+      startBtn.innerHTML = `<span style="white-space:nowrap">⚔️ STAGE ${curStage.id} 출격하기!</span>`;
     }
 
     const startW = window.GAME_DATA.weapons[sel.startWeapon];
+    const cleanW = String(startW.name || '').replace(/\s*\[.*?\]/g, '');
+    const cleanT = String(sel.traitName || '').replace(/\s*\(.*?\)/g, '');
     const partnerSum = document.getElementById('selectedPartnerSummary');
     if (partnerSum) {
       partnerSum.innerHTML = `
-        <h3>파트너: ${sel.name} <small style="color:#fef08a">(${startW.icon}${startW.name} · 특성: ${sel.traitName})</small></h3>
+        <h3 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">파트너: ${sel.name} <small style="color:#fef08a">(${startW.icon}${cleanW} · ${cleanT})</small></h3>
       `;
     }
   }
@@ -629,13 +630,13 @@ class PokeSurvivorsGame {
           return `
             <div class="sc-boss-chip ${isFinal ? 'final' : ''}">
               <img src="./assets/sprites/${b.dex}.png" alt="${b.name}" />
-              <div>
-                <div style="font-size:0.62rem;color:${isFinal ? '#dc2626' : '#64748b'};font-weight:900">${timeLbl}</div>
+              <div style="text-align:left;min-width:0">
+                <div style="font-size:0.62rem;color:${isFinal ? '#dc2626' : '#64748b'};font-weight:900;white-space:nowrap">${timeLbl}</div>
                 <span>${cleanBossName(b.name)}</span>
               </div>
             </div>
           `;
-        }).join('<span style="color:#94a3b8;font-weight:900;font-size:0.75rem">➔</span>');
+        }).join('');
 
         const finalBoss = stg.bosses[stg.bosses.length - 1];
         card.innerHTML = `
@@ -660,7 +661,7 @@ class PokeSurvivorsGame {
             </div>
           </div>
           <div class="sc-boss-footer">
-            <span class="sc-boss-footer-label">🚨 출현 보스</span>
+            <span class="sc-boss-footer-label">🚨 시간대별 출현 보스 (1분 ➔ 2분 ➔ 4분)</span>
             <div class="sc-boss-chain">${bossIconsHtml}</div>
           </div>
         `;
@@ -730,7 +731,7 @@ class PokeSurvivorsGame {
               <span class="type-pill" style="background:${st.typeColor}">${st.type}</span>
               <span class="pc-name">${st.name}</span>
             </div>
-            <span class="pc-bonus-badge">${st.bonusText}</span>
+            <span class="pc-bonus-badge">${startW.icon} ${cleanWeapon} · ${cleanTrait}</span>
           </div>
           <div class="pc-hero-section">
             <div class="pc-main-portrait">
@@ -743,11 +744,11 @@ class PokeSurvivorsGame {
           </div>
           <div class="pc-specs-footer">
             <div class="pc-spec-row">
-              <span class="pc-spec-tag trait">✨ 특성 · ${cleanTrait}</span>
+              <span class="pc-spec-tag trait">✨ 고유 특성 [${cleanTrait}]</span>
               <span class="pc-spec-text">${st.traitDesc}</span>
             </div>
             <div class="pc-spec-row">
-              <span class="pc-spec-tag weapon">${startW.icon} 전용기 · ${cleanWeapon}</span>
+              <span class="pc-spec-tag weapon">${startW.icon} 전용 시작 기술 [${cleanWeapon}]</span>
               <span class="pc-spec-text">${cleanWDesc}</span>
             </div>
           </div>
